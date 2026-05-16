@@ -1,6 +1,13 @@
 # name of project
 PROG = proj
 
+.PATH: ${.CURDIR}/game
+.PATH: ${.CURDIR}/rtc
+.PATH: ${.CURDIR}/timer
+.PATH: ${.CURDIR}/keyboard
+.PATH: ${.CURDIR}/mouse
+.PATH: ${.CURDIR}/graphic
+
 # source code files to be compiled
 SRCS = main.c game.c
 

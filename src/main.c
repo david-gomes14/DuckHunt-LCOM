@@ -1,7 +1,7 @@
 #include <lcom/lcf.h>
 #include <stdio.h>
 
-#include "../includes/game.h"
+#include "game/game.h"
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)

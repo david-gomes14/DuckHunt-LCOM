@@ -1,4 +1,4 @@
-#include "../includes/game.h"
+#include "game.h"
 #include <stdio.h>
 #include <stdbool.h>
 
