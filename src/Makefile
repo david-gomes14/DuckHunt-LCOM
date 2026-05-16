@@ -7,9 +7,10 @@ PROG = proj
 .PATH: ${.CURDIR}/keyboard
 .PATH: ${.CURDIR}/mouse
 .PATH: ${.CURDIR}/graphic
+.PATH: ${.CURDIR}/utils
 
 # source code files to be compiled
-SRCS = main.c game.c
+SRCS = main.c game.c timer.c kbc.c utils.c
 
 # additional compilation flags
 CFLAGS += -pedantic
