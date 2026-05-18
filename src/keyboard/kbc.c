@@ -50,7 +50,7 @@ int (read_kbc_command)(uint8_t *value) {
             return 0;
 
         }
-
+        tickdelay(micros_to_ticks(DELAY_US));
         retries--;
     }
 
@@ -85,7 +85,7 @@ int (write_kbc_command)(uint8_t cmd) {
             return 0;
 
         }
-
+        tickdelay(micros_to_ticks(DELAY_US));
         retries--;
     }
 

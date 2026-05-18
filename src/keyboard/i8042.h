@@ -31,6 +31,7 @@
 #define KBC_INT BIT(0)
 
 /* Polling / command timing */
+#define DELAY_US     20000
 #define MAX_RETRIES  10
 
 #endif

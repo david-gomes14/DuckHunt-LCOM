@@ -10,7 +10,7 @@ PROG = proj
 .PATH: ${.CURDIR}/utils
 
 # source code files to be compiled
-SRCS = main.c game.c timer.c kbc.c utils.c
+SRCS = main.c game.c timer.c kbc.c mouse.c utils.c
 
 # additional compilation flags
 CFLAGS += -pedantic
