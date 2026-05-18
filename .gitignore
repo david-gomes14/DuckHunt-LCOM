@@ -1,0 +1,12 @@
+*.o
+*.d
+*.a
+*.so
+*.out
+.DS_Store
+.vscode/
+.minix-src/
+trace.txt
+output.txt
+.gdbinit
+proj
