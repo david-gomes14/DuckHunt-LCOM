@@ -15,7 +15,7 @@
 /* Status Register bits */
 #define OUTPUT_BUFFER_FULL         BIT(0) /* Output buffer full */
 #define INPUT_BUFFER_FULL          BIT(1) /* Input buffer full */
-#define Aux                        BIT(5) /* Mouse data */
+#define AUX                        BIT(5) /* Mouse data */
 #define TIMEOUT                    BIT(6) /* Invalid data */
 #define PARITY                     BIT(7) /* Invalid data */
 

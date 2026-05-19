@@ -7,7 +7,7 @@
 #include "../timer/timer.h"
 #include "../keyboard/kbc.h"
 #include "../mouse/mouse.h"
-#include "../graphic/graphic.c"
+#include "../graphic/graphic.h"
 #include "../images/background.xpm"
 
 
@@ -18,8 +18,8 @@ static uint8_t mouse_irq;
 
 void game_init() {
 
-    set_graphics_mode(0x115);
     map_video_memory(0x115);
+    set_graphics_mode(0x115);
 
     timer_subscribe_int(&timer_irq);
     kbc_subscribe_int(&kbc_irq);
@@ -59,9 +59,9 @@ void game_loop() {
                 case HARDWARE:
                     if (msg.m_notify.interrupts & irq_set_timer) {
                         timer_int_handler();
-                        if (timer_counter % 60 == 0) {
+                        if (timer_counter % sys_hz() == 0) {
                             printf("1 second\n");
-                        }    
+                        }
                     }
 
                     if (msg.m_notify.interrupts & irq_set_kbd) {

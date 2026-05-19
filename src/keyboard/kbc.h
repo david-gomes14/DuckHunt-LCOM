@@ -11,6 +11,8 @@ extern bool scancode_error;
 int (kbc_subscribe_int)(uint8_t *bit_no);
 int (kbc_unsubscribe_int)();
 
+void (kbc_ih)();
+
 int (read_kbc_command)(uint8_t *value);
 int (write_kbc_command)(uint8_t cmd);
 
