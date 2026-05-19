@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   // handles control over to LCF
   // [LCF handles command line arguments and invokes the right function]
   if (lcf_start(argc, argv))
-    return 1;
+	return 1;
 
   // LCF clean up tasks
   // [must be the last statement before return]

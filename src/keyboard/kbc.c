@@ -25,81 +25,81 @@ int (kbc_unsubscribe_int)() {
 
 int (read_kbc_command)(uint8_t *value) {
 
-    uint8_t status;
-    int retries = MAX_RETRIES;
-    
-    while (retries) {
+	uint8_t status;
+	int retries = MAX_RETRIES;
+	
+	while (retries) {
 
-        if (util_sys_inb(KBC_STATUS_REG, &status) != 0) {
-		    return 1;
-	    }
+		if (util_sys_inb(KBC_STATUS_REG, &status) != 0) {
+			return 1;
+		}
 
-        if (status & (TIMEOUT | PARITY)) {
-		    return 1;
-	    }
+		if (status & (TIMEOUT | PARITY)) {
+			return 1;
+		}
 
-        if ((status & OUTPUT_BUFFER_FULL) != 0) {
+		if ((status & OUTPUT_BUFFER_FULL) != 0) {
 
-            if (util_sys_inb(OUTPUT_BUF_REG, value) != 0) {
-                return 1;
-            }
-            
-            if (status & BIT(5)) { 
-                return 1;
-            }
-            return 0;
+			if (util_sys_inb(OUTPUT_BUF_REG, value) != 0) {
+				return 1;
+			}
+			
+			if (status & BIT(5)) { 
+				return 1;
+			}
+			return 0;
 
-        }
-        tickdelay(micros_to_ticks(DELAY_US));
-        retries--;
-    }
+		}
+		tickdelay(micros_to_ticks(DELAY_US));
+		retries--;
+	}
 
-    return 1;
+	return 1;
 }
 
 
 int (write_kbc_command)(uint8_t cmd) {
 
-    uint8_t status;
-    int retries = MAX_RETRIES;
-    
-    while (retries) {
+	uint8_t status;
+	int retries = MAX_RETRIES;
+	
+	while (retries) {
 
-        if (util_sys_inb(KBC_STATUS_REG, &status) != 0) {
-		    return 1;
-	    }
+		if (util_sys_inb(KBC_STATUS_REG, &status) != 0) {
+			return 1;
+		}
 
-        if (status & (TIMEOUT | PARITY)) {
-		    return 1;
-	    }
+		if (status & (TIMEOUT | PARITY)) {
+			return 1;
+		}
 
-        if ((status & INPUT_BUFFER_FULL) == 0) {
+		if ((status & INPUT_BUFFER_FULL) == 0) {
 
-            if (sys_outb(KBC_COMMAND_REG, cmd) != 0) {
-                return 1;
-            }
-            
-            if (status & BIT(5)) { 
-                return 1;
-            }
-            return 0;
+			if (sys_outb(KBC_COMMAND_REG, cmd) != 0) {
+				return 1;
+			}
+			
+			if (status & BIT(5)) { 
+				return 1;
+			}
+			return 0;
 
-        }
-        tickdelay(micros_to_ticks(DELAY_US));
-        retries--;
-    }
+		}
+		tickdelay(micros_to_ticks(DELAY_US));
+		retries--;
+	}
 
-    return 1;
+	return 1;
 }
 
 
 void (kbc_ih)() {
 
-    if (read_kbc_command(&scancode) != 0) {
-        scancode_error = true;
-        return;
-    }
+	if (read_kbc_command(&scancode) != 0) {
+		scancode_error = true;
+		return;
+	}
 
-    scancode_error = false;
+	scancode_error = false;
 }
 

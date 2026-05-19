@@ -25,11 +25,11 @@ int (mouse_unsubscribe_int)() {
 
 
 int (mouse_write_cmd)(uint8_t cmd) {
-    uint8_t response;
+	uint8_t response;
 	int retries = MAX_RETRIES;
 	uint8_t status;
 
-    while(retries--) {
+	while(retries--) {
 		if (util_sys_inb(KBC_STATUS_REG, &status) != 0) return 1;
 
 		if ((status & INPUT_BUFFER_FULL) == 0) {
@@ -38,7 +38,7 @@ int (mouse_write_cmd)(uint8_t cmd) {
 
 		else {
 			tickdelay(micros_to_ticks(DELAY_US));
- 			continue;
+			continue;
 		}
 
 		if(util_sys_inb(KBC_STATUS_REG, &status) != 0) return 1;
@@ -75,12 +75,12 @@ int (mouse_write_cmd)(uint8_t cmd) {
 
 
 int (mouse_enable_data)() {
-    return mouse_write_cmd(MOUSE_ENABLE_DATA);
+	return mouse_write_cmd(MOUSE_ENABLE_DATA);
 }
 
 
 int (mouse_disable_data)() {
-    return mouse_write_cmd(MOUSE_DISABLE_DATA);
+	return mouse_write_cmd(MOUSE_DISABLE_DATA);
 }
 
 
@@ -88,10 +88,10 @@ bool (mouse_sync_packet)(uint8_t packet_bytes[3], uint8_t *packet_index){
 	if (packet_bytes == NULL || packet_index == NULL) return false;
 
 	if (*packet_index == 0 && !(mouse_byte & ALWAYS_1)) {
-        return false;    
-    }
+		return false;    
+	}
 
-    packet_bytes[*packet_index] = mouse_byte;
+	packet_bytes[*packet_index] = mouse_byte;
 	(*packet_index)++;
 
 	if (*packet_index == 3) {
@@ -106,7 +106,7 @@ bool (mouse_sync_packet)(uint8_t packet_bytes[3], uint8_t *packet_index){
 
 void (mouse_parse_packet)(uint8_t packet_bytes[3], struct packet *pp) {
 
-    if (packet_bytes == NULL || pp == NULL) return;
+	if (packet_bytes == NULL || pp == NULL) return;
 
 	pp->bytes[0] = packet_bytes[0];
 	pp->bytes[1] = packet_bytes[1];
@@ -119,17 +119,17 @@ void (mouse_parse_packet)(uint8_t packet_bytes[3], struct packet *pp) {
 	pp->x_ov = packet_bytes[0] & X_OVFL;
 	pp->y_ov = packet_bytes[0] & Y_OVFL;
 
-    if (packet_bytes[0] & X_SIGN) {
+	if (packet_bytes[0] & X_SIGN) {
 		pp->delta_x = (int16_t)(0xFF00 | packet_bytes[1]);
-    } else {
+	} else {
 		pp->delta_x = packet_bytes[1];
-    }
+	}
 
 	if (packet_bytes[0] & Y_SIGN) {
 		pp->delta_y = (int16_t)(0xFF00 | packet_bytes[2]);
-    } else {
+	} else {
 		pp->delta_y = packet_bytes[2];
-    }
+	}
 }
 
 
@@ -142,17 +142,17 @@ void (mouse_ih)(){
 		return;
 	}
 
-    if (!(status & OUTPUT_BUFFER_FULL)) {
+	if (!(status & OUTPUT_BUFFER_FULL)) {
 		mouse_error = true;
 		return;
 	}
 
-    if (!(status & AUX)) {
+	if (!(status & AUX)) {
 		mouse_error = true;
 		return;
 	}
 
-    if (status & (PARITY | TIMEOUT)) {
+	if (status & (PARITY | TIMEOUT)) {
 		mouse_error = true;
 	}
 
