@@ -26,8 +26,11 @@ void game_init() {
 	mouse_subscribe_int(&mouse_irq);
 
 	mouse_enable_data();
-
+	
+	timer_set_frequency(0, 60);
+	
 	draw_pixmap((xpm_map_t) background_xpm, 0, 0);
+	vg_store_background();
 
 	printf("init\n");
 }
@@ -59,10 +62,9 @@ void game_loop() {
 				case HARDWARE:
 					if (msg.m_notify.interrupts & irq_set_timer) {
 						timer_int_handler();
-						if (timer_counter % sys_hz() == 0) {
-							printf("1 second\n");
-						}
-			vg_flip();
+						vg_restore_background();
+						draw_crosshair(mouse_x, mouse_y, 10, 0xFF0000);
+						vg_flip();
 					}
 
 					if (msg.m_notify.interrupts & irq_set_kbd) {
@@ -77,7 +79,14 @@ void game_loop() {
 						if (!mouse_error) {
 							if (mouse_sync_packet(mouse_packet, &mouse_index)) {
 								mouse_parse_packet(mouse_packet, &pp);
-								printf("dx=%d dy=%d lb=%d rb=%d\n", pp.delta_x, pp.delta_y, pp.lb, pp.rb);
+								if (!pp.x_ov && !pp.y_ov) {
+									mouse_x += pp.delta_x;
+									mouse_y -= pp.delta_y;
+									if (mouse_x < 0) mouse_x = 0;
+									if (mouse_y < 0) mouse_y = 0;
+									if (mouse_x >= 1024) mouse_x = 1023;
+									if (mouse_y >= 768) mouse_y = 767;
+								}
 							}
 						}
 					}

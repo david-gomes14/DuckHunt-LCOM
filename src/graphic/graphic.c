@@ -9,6 +9,7 @@
 
 static char *video_mem;
 static char *back_buffer;
+static char *bg_buffer;
 static vbe_mode_info_t vmi;
 static unsigned bytes_per_pixel;
 static unsigned int vram_size;
@@ -62,12 +63,19 @@ int map_video_memory(uint16_t mode) {
 		return 1;
 	}
    
-   back_buffer = malloc(vram_size);
-   if (back_buffer == NULL) {
+	back_buffer = malloc(vram_size);
+	if (back_buffer == NULL) {
 		printf("couldn't allocate back buffer\n");
 		return 1;
-   }
-   memset(back_buffer, 0, vram_size);
+	}
+	memset(back_buffer, 0, vram_size);
+
+	bg_buffer = malloc(vram_size);
+	if (bg_buffer == NULL) {
+		printf("couldn't allocate bg buffer\n");
+		return 1;
+	}
+	memset(bg_buffer, 0, vram_size);
 
 	return 0;
 
@@ -127,12 +135,31 @@ int draw_pixmap(xpm_map_t xpm, uint16_t x, uint16_t y) {
 }
 
 
+int draw_crosshair(int x, int y, int size, uint32_t color) {
+	for (int i = -size; i <= size; i++)
+		if (x + i >= 0) draw_pixel(x + i, y, color);
+	for (int i = 1; i <= size; i++) {
+		if (y - i >= 0) draw_pixel(x, y - i, color);
+		draw_pixel(x, y + i, color);
+	}
+	return 0;
+}
+
+void vg_store_background() {
+	memcpy(bg_buffer, back_buffer, vram_size);
+}
+
+void vg_restore_background() {
+	memcpy(back_buffer, bg_buffer, vram_size);
+}
+
 void vg_flip() {
 	memcpy(video_mem, back_buffer, vram_size);
 }
 
-
 void vg_free_buffer() {
 	free(back_buffer);
+	free(bg_buffer);
 	back_buffer = NULL;
+	bg_buffer = NULL;
 }

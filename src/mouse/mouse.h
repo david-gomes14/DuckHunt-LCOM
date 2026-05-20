@@ -5,6 +5,8 @@
 #include <stdbool.h>
 
 extern bool mouse_error;
+extern int mouse_x;
+extern int mouse_y;
 
 int (mouse_subscribe_int)(uint8_t *bit_no);
 int (mouse_unsubscribe_int)();
