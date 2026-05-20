@@ -84,8 +84,8 @@ void game_loop() {
 									mouse_y -= pp.delta_y;
 									if (mouse_x < 0) mouse_x = 0;
 									if (mouse_y < 0) mouse_y = 0;
-									if (mouse_x >= 1024) mouse_x = 1023;
-									if (mouse_y >= 768) mouse_y = 767;
+									if (mouse_x >= 800) mouse_x = 799;
+									if (mouse_y >= 600) mouse_y = 599;
 								}
 							}
 						}
