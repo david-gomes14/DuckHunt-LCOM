@@ -11,6 +11,7 @@
 #include "../images/background.xpm"
 #include "../images/menu_start.xpm"
 #include "../images/menu_quit.xpm"
+#include "target.h"
 
 
 static uint8_t timer_irq;
@@ -34,6 +35,7 @@ static void enter_playing() {
 	vg_store_background();
 	mouse_x = 400;
 	mouse_y = 300;
+	target_init();
 	state = STATE_PLAYING;
 }
 
@@ -84,8 +86,11 @@ void game_loop() {
 					if (msg.m_notify.interrupts & irq_set_timer) {
 						timer_int_handler();
 						vg_restore_background();
-						if (state == STATE_PLAYING)
-							draw_crosshair(mouse_x, mouse_y, 10, 0xFF0000);
+						if (state == STATE_PLAYING) {
+							target_update();
+							target_draw();
+							draw_crosshair(mouse_x, mouse_y, 10, 0xFF00FF);
+						}
 						vg_flip();
 					}
 
@@ -135,6 +140,8 @@ void game_loop() {
 									if (mouse_x >= 800) mouse_x = 799;
 									if (mouse_y >= 600) mouse_y = 599;
 								}
+								if (pp.lb)
+									target_check_hit(mouse_x, mouse_y);
 							}
 						}
 					}
