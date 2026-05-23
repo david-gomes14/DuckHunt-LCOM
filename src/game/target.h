@@ -11,6 +11,7 @@ typedef struct {
 	int x, y;
 	int dx, dy;
 	int wobble;
+	int anim_frame;
 	bool active;
 } Target;
 
