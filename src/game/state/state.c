@@ -1,11 +1,10 @@
 #include <lcom/lcf.h>
 
+#include "state.h"
+
 #include "../../graphic/graphic.h"
 #include "../menu/menu.h"
-#include "../input/input.h"
 #include "../target.h"
-#include "../game.h"
-#include "state.h"
 
 #include "../../images/background.xpm"
 

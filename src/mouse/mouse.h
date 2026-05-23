@@ -3,6 +3,9 @@
 
 #include <lcom/lcf.h>
 #include <stdbool.h>
+#include <stdint.h>
+
+#include "i8042.h"
 
 extern bool mouse_error;
 extern int mouse_x;

@@ -1,11 +1,12 @@
 #include <lcom/lcf.h>
 
+#include "input.h"
+
 #include "../../keyboard/kbc.h"
 #include "../../mouse/mouse.h"
 #include "../menu/menu.h"
-#include "../target.h"
 #include "../state/state.h"
-#include "input.h"
+ #include "../target.h"
 
 extern game_state_t state;
 
@@ -14,7 +15,6 @@ extern int mouse_y;
 
 static uint8_t mouse_packet[3];
 static uint8_t mouse_index = 0;
-
 struct packet pp;
 
 
@@ -26,15 +26,15 @@ bool handle_keyboard() {
 	
     if (state == STATE_MENU) {
 		switch (scancode) {
-			case 0x11:  /* W make */
-			case 0x48:  /* UP arrow second byte */
+			case W_MAKE:  /* W make */
+			case UP_ARROW_MAKE:  /* UP arrow second byte */
 				if (menu_move_up()) menu_draw();
 				break;
-			case 0x1F:  /* S make */
-			case 0x50:  /* DOWN arrow second byte */
+			case S_MAKE:  /* S make */
+			case DOWN_ARROW_MAKE:  /* DOWN arrow second byte */
 				if (menu_move_down()) menu_draw();
 				break;
-			case 0x1C:  /* ENTER make */
+			case ENTER_MAKE:  /* ENTER make */
 				if (!menu_select()) return false;
 				break;
 			case ESC_BREAK_CODE:

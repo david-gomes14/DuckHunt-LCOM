@@ -12,9 +12,7 @@
 #include "menu/menu.h"
 #include "input/input.h"
 #include "state/state.h"
-
 #include "target.h"
-
 
 static uint8_t timer_irq;
 static uint8_t kbc_irq;

@@ -1,18 +1,12 @@
 #include <lcom/lcf.h>
 
-#include "../../graphic/graphic.h"
 #include "menu.h"
-#include "../target.h"
+
+#include "../../graphic/graphic.h"
 #include "../state/state.h"
 
 #include "../../images/menu_start.xpm"
 #include "../../images/menu_quit.xpm"
-#include "../../images/background.xpm"
-
-extern game_state_t state;
-
-extern int mouse_x;
-extern int mouse_y;
 
 static int menu_selection;
 

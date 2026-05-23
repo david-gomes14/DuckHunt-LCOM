@@ -1,7 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <lcom/lcf.h>
+#include "i8254.h"
 
 extern int timer_counter;
 

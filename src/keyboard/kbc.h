@@ -1,9 +1,10 @@
 #ifndef KBC_H
 #define KBC_H
 
-#include <lcom/lcf.h>
+#include <stdint.h>
+#include <stdbool.h>
 
-#define ESC_BREAK_CODE 0x81
+#include "i8042.h"
 
 extern uint8_t scancode;
 extern bool scancode_error;

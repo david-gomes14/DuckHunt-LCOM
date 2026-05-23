@@ -1,8 +1,6 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <lcom/lcf.h>
-
 typedef enum {
     STATE_MENU = 0,
     STATE_PLAYING

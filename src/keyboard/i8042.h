@@ -1,8 +1,6 @@
 #ifndef _I8042_H_
 #define _I8042_H_
 
-#include <lcom/lcf.h>
-
 /* IRQ line */
 #define KBC_IRQ 1
 
@@ -33,6 +31,13 @@
 /* Polling / command timing */
 #define DELAY_US     20000
 #define MAX_RETRIES  10
+
+/* Inputs */
+#define W_MAKE          0x11
+#define UP_ARROW_MAKE   0x48
+#define S_MAKE          0x1F
+#define DOWN_ARROW_MAKE 0x50
+#define ENTER_MAKE      0x1C
 
 #endif
 
