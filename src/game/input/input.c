@@ -4,7 +4,7 @@
 #include "../../mouse/mouse.h"
 #include "../menu/menu.h"
 #include "../target.h"
-#include "../game.h"
+#include "../state/state.h"
 #include "input.h"
 
 extern game_state_t state;

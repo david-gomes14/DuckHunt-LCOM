@@ -4,6 +4,7 @@ PROG = proj
 .PATH: ${.CURDIR}/game
 .PATH: ${.CURDIR}/game/input
 .PATH: ${.CURDIR}/game/menu
+.PATH: ${.CURDIR}/game/state
 
 .PATH: ${.CURDIR}/rtc
 .PATH: ${.CURDIR}/timer
@@ -13,7 +14,7 @@ PROG = proj
 .PATH: ${.CURDIR}/utils
 
 # source code files to be compiled
-SRCS = main.c game.c menu.c input.c target.c graphic.c timer.c kbc.c mouse.c utils.c
+SRCS = main.c game.c menu.c input.c state.c target.c graphic.c timer.c kbc.c mouse.c utils.c
 
 # additional compilation flags
 CFLAGS += -pedantic

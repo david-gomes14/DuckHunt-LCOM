@@ -11,6 +11,7 @@
 
 #include "menu/menu.h"
 #include "input/input.h"
+#include "state/state.h"
 
 #include "target.h"
 
@@ -18,8 +19,6 @@
 static uint8_t timer_irq;
 static uint8_t kbc_irq;
 static uint8_t mouse_irq;
-
-game_state_t state = STATE_MENU;
 
 void game_init() {
 	map_video_memory(0x115);
@@ -63,6 +62,7 @@ void game_loop() {
 
 					if (msg.m_notify.interrupts & irq_set_timer) {
 						timer_int_handler();
+						state_tick();
 						vg_restore_background();
 						if (state == STATE_PLAYING) {
 							target_update();
