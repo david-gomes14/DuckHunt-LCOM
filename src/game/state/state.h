@@ -10,6 +10,7 @@ typedef enum {
 
 extern game_state_t state;
 
+void state_render();
 void state_enter_menu();
 void state_enter_playing();
 void state_tick();

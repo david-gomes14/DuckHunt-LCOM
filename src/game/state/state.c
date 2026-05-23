@@ -18,6 +18,16 @@ extern int mouse_y;
 
 static int ticks_remaining = 0;
 
+void state_render() {
+    vg_restore_background();
+	if (state == STATE_PLAYING) {
+		target_update();
+		target_draw();
+		draw_crosshair(mouse_x, mouse_y, 10, 0xFF00FF);
+	}
+	vg_flip();
+}
+
 void state_enter_menu() {
     ticks_remaining = 0;
     menu_init();

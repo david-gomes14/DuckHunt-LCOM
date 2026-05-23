@@ -63,13 +63,7 @@ void game_loop() {
 					if (msg.m_notify.interrupts & irq_set_timer) {
 						timer_int_handler();
 						state_tick();
-						vg_restore_background();
-						if (state == STATE_PLAYING) {
-							target_update();
-							target_draw();
-							draw_crosshair(mouse_x, mouse_y, 10, 0xFF00FF);
-						}
-						vg_flip();
+						state_render();
 					}
 
 					if (msg.m_notify.interrupts & irq_set_kbd) {
