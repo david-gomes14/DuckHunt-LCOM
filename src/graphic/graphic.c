@@ -1,3 +1,5 @@
+#include <lcom/lcf.h>
+
 #include "graphic.h"
 
 #include <stdio.h>
