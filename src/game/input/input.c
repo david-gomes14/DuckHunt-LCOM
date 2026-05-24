@@ -65,8 +65,8 @@ void handle_mouse() {
 		mouse_y -= pp.delta_y;
 		if (mouse_x < 0)    mouse_x = 0;
 		if (mouse_y < 0)    mouse_y = 0;
-		if (mouse_x >= 800) mouse_x = 799;
-		if (mouse_y >= 600) mouse_y = 599;
+		if (mouse_x >= 1152) mouse_x = 1151;
+		if (mouse_y >= 864)  mouse_y = 863;
 	}
 	if (pp.lb) {
 		target_check_hit(mouse_x, mouse_y);

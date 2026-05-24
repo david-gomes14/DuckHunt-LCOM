@@ -17,10 +17,10 @@ void menu_init() {
 void menu_draw() {
 
     if (menu_selection == 0)
-        draw_pixmap((xpm_map_t) menu_start, 0, 0);
+        draw_pixmap((xpm_map_t) menu_start_xpm, 0, 0);
 
     else
-        draw_pixmap((xpm_map_t) menu_quit, 0, 0);
+        draw_pixmap((xpm_map_t) menu_quit_xpm, 0, 0);
 
     vg_store_background();
 }

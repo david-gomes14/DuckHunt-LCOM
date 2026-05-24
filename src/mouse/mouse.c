@@ -7,8 +7,8 @@ int mouse_hook_id = MOUSE_IRQ;
 uint8_t mouse_byte;
 bool mouse_error;
 
-int mouse_x = 400;
-int mouse_y = 300;
+int mouse_x = 576;
+int mouse_y = 432;
 
 
 int (mouse_subscribe_int)(uint8_t *bit_no) {
