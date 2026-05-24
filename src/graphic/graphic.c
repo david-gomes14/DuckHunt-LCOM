@@ -1,10 +1,9 @@
 #include <lcom/lcf.h>
 
-#include <stdint.h>
+#include "graphic.h"
+
 #include <stdio.h>
 #include <string.h>
-
-#include "graphic.h"
 
 
 static char *video_mem;

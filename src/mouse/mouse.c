@@ -1,6 +1,5 @@
-#include <lcom/lcf.h>
+#include <minix/sysutil.h>
 
-#include "i8042.h"
 #include "mouse.h"
 #include "../utils/utils.h"
 

@@ -1,7 +1,6 @@
 #include <lcom/lcf.h>
 #include <minix/sysutil.h>
 
-#include "i8042.h"
 #include "kbc.h"
 #include "../utils/utils.h"
 

@@ -1,7 +1,6 @@
 #include <lcom/lcf.h>
 #include <minix/sysutil.h>
 
-#include "i8254.h"
 #include "timer.h"
 
 int timer_hook_id = TIMER0_IRQ;

@@ -1,8 +1,6 @@
 #ifndef _I8042_H_
 #define _I8042_H_
 
-#include <lcom/lcf.h>
-
 /* IRQ line */
 #define KBC_IRQ 1
 #define MOUSE_IRQ 12
