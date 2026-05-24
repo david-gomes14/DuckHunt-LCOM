@@ -41,7 +41,7 @@ static void draw_duck(int x, int y, bool flap_up) {
 }
 
 static void spawn_one(int slot) {
-	int dir = /*(rand() % 2 == 0) ?*/ 1; /* : -1;*/  /* 1 = left→right, -1 = right→left */
+	int dir = (rand() % 2 == 0) ? 1 : -1;  /* 1 = left→right, -1 = right→left */
 	targets[slot].anim_frame = 0;
 	targets[slot].dx     = dir * DUCK_SPEED_X;
 	targets[slot].dy     = (rand() % 3) - 1;  /* -1, 0 or +1 */
