@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 #define MAX_TARGETS  2
-#define DUCK_W       60
-#define DUCK_H       60
+#define DUCK_W       86
+#define DUCK_H       86
 
 typedef struct {
 	int x, y;

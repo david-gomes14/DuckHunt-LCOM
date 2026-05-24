@@ -11,8 +11,8 @@
 #include "../../images/duck_down.xpm"
 
 #define TRANSPARENT_COLOR  0xFF00FF
-#define SCREEN_W           800
-#define SCREEN_H           600
+#define SCREEN_W           1152
+#define SCREEN_H           864
 #define DUCK_SPEED_X       4   /* pixels/frame horizontal */
 #define WOBBLE_INTERVAL    40  /* frames between vertical direction changes */
 #define ANIM_INTERVAL      15  /* frames entre mudança de sprite */
@@ -27,13 +27,14 @@ static xpm_image_t duck_up_info;
 static xpm_image_t duck_down_info;
 
 
-static void draw_duck(int x, int y, bool flap_up) {
+static void draw_duck(int x, int y, bool flap_up, bool facing_left) {
 	uint32_t *pixels = flap_up ? duck_up_pixels : duck_down_pixels;
-  	xpm_image_t *info = flap_up ? &duck_up_info : &duck_down_info;
+	xpm_image_t *info = flap_up ? &duck_up_info : &duck_down_info;
 
 	for (int i = 0; i < info->height; i++) {
 		for (int j = 0; j < info->width; j++) {
-			uint32_t c = pixels[i * info->width + j];
+			int src_j = facing_left ? (info->width - 1 - j) : j;
+			uint32_t c = pixels[i * info->width + src_j];
 			if ((c >> 24) == 0)
 				draw_pixel(x + j, y + i, c);
 		}
@@ -106,10 +107,11 @@ void target_update() {
 
 void target_draw() {
   	for (int i = 0; i < MAX_TARGETS; i++) {
-    	if (!targets[i].active) continue;
-    	bool flap_up = (targets[i].anim_frame / ANIM_INTERVAL) % 2 == 0;
-    	draw_duck(targets[i].x, targets[i].y, flap_up);
-  	}
+		if (!targets[i].active) continue;
+		bool flap_up = (targets[i].anim_frame / ANIM_INTERVAL) % 2 == 0;
+		bool facing_left = targets[i].dx < 0;
+		draw_duck(targets[i].x, targets[i].y, flap_up, facing_left);
+	}
 }
 
 bool target_check_hit(int mx, int my) {

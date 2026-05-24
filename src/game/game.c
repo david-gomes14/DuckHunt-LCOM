@@ -21,8 +21,8 @@ static uint8_t kbc_irq;
 static uint8_t mouse_irq;
 
 void game_init() {
-	map_video_memory(0x115);
-	set_graphics_mode(0x115);
+	map_video_memory(0x14C);
+	set_graphics_mode(0x14C);
 
 	timer_subscribe_int(&timer_irq);
 	kbc_subscribe_int(&kbc_irq);
