@@ -3,10 +3,12 @@
 #include <stdbool.h>
 
 #include "target.h"
-#include "../graphic/graphic.h"
-#include "../timer/timer.h"
-#include "../images/duck_up.xpm"
-#include "../images/duck_down.xpm"
+#include "../../graphic/graphic.h"
+#include "../../timer/timer.h"
+#include "../score/score.h"
+
+#include "../../images/duck_up.xpm"
+#include "../../images/duck_down.xpm"
 
 #define TRANSPARENT_COLOR  0xFF00FF
 #define SCREEN_W           800
@@ -16,7 +18,7 @@
 #define ANIM_INTERVAL      15  /* frames entre mudança de sprite */
 
 static Target targets[MAX_TARGETS];
-int score = 0;
+extern int score;
 
 /* Cached duck pixels — loaded once, reused every frame */
 static uint32_t *duck_up_pixels = NULL;
@@ -56,7 +58,7 @@ void target_init() {
 	srand(timer_counter);
 	for (int i = 0; i < MAX_TARGETS; i++)
 		targets[i].active = false;
-	score = 0;
+	score_reset();
 	spawn_one(0);
 }
 
@@ -116,7 +118,7 @@ bool target_check_hit(int mx, int my) {
 		if (mx >= targets[i].x && mx <= targets[i].x + DUCK_W &&
 		    my >= targets[i].y && my <= targets[i].y + DUCK_H) {
 			targets[i].active = false;
-			score++;
+			score_add(1);
 			target_spawn();
 			return true;
 		}
