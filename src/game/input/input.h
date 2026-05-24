@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-bool handle_keyboard();
+void handle_keyboard();
 void handle_mouse();
 
 #endif

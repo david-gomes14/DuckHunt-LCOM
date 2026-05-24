@@ -4,7 +4,7 @@
 
 #include "../../graphic/graphic.h"
 #include "../menu/menu.h"
-#include "../target.h"
+#include "../target/target.h"
 
 #include "../../images/background.xpm"
 

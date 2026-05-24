@@ -6,7 +6,7 @@
 #include "../../mouse/mouse.h"
 #include "../menu/menu.h"
 #include "../state/state.h"
- #include "../target.h"
+ #include "../target/target.h"
 
 extern game_state_t state;
 
@@ -18,10 +18,10 @@ static uint8_t mouse_index = 0;
 struct packet pp;
 
 
-bool handle_keyboard() {
+void handle_keyboard() {
     kbc_ih();
 	if (scancode_error) {
-        return true;
+        return;
     }
 	
     if (state == STATE_MENU) {
@@ -35,17 +35,17 @@ bool handle_keyboard() {
 				if (menu_move_down()) menu_draw();
 				break;
 			case ENTER_MAKE:  /* ENTER make */
-				if (!menu_select()) return false;
+				if (!menu_select()) state = STATE_EXIT;
 				break;
 			case ESC_BREAK_CODE:
-				return false;
+				state = STATE_EXIT;
 				break;
 		}
 	} else {
-		if (scancode == ESC_BREAK_CODE) return false;
+		if (scancode == ESC_BREAK_CODE) state = STATE_EXIT;
 	}
 
-    return true;
+    
 }
 
 void handle_mouse() {

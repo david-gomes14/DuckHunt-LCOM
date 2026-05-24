@@ -12,7 +12,9 @@
 #include "menu/menu.h"
 #include "input/input.h"
 #include "state/state.h"
-#include "target.h"
+#include "target/target.h"
+
+extern game_state_t state;
 
 static uint8_t timer_irq;
 static uint8_t kbc_irq;
@@ -45,9 +47,7 @@ void game_loop() {
 	uint32_t irq_set_kbd   = BIT(kbc_irq);
 	uint32_t irq_set_mouse = BIT(mouse_irq);
 
-	bool running = true;
-
-	while (running) {
+	while (state != STATE_EXIT) {
 
 		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
@@ -65,9 +65,7 @@ void game_loop() {
 					}
 
 					if (msg.m_notify.interrupts & irq_set_kbd) {
-						if (!handle_keyboard()) {
-							running = false;
-						}
+						handle_keyboard();
 					}
 
 					if (msg.m_notify.interrupts & irq_set_mouse) {
