@@ -5,6 +5,8 @@
 #include "../../graphic/graphic.h"
 #include "../menu/menu.h"
 #include "../target/target.h"
+#include "../hud/hud.h"
+#include "../score/score.h"
 
 #include "../../images/background.xpm"
 
@@ -14,12 +16,14 @@ game_state_t state = STATE_MENU;
 
 extern int mouse_x;
 extern int mouse_y;
+extern int score;
 
 static int ticks_remaining = 0;
 
 void state_render() {
     vg_restore_background();
 	if (state == STATE_PLAYING) {
+        hud_draw(score_get(), state_get_time());
 		target_update();
 		target_draw();
 		draw_crosshair(mouse_x, mouse_y, 10, 0xFF00FF);
@@ -37,9 +41,11 @@ void state_enter_menu() {
 void state_enter_playing() {
     draw_pixmap((xpm_map_t) background_xpm, 0, 0);
     vg_store_background();
+    hud_draw(score_get(), state_get_time());
     mouse_x = 576;
     mouse_y = 432;
     target_init();
+    score_reset();
     ticks_remaining = GAME_DURATION_TICKS;
     state = STATE_PLAYING;
 }
