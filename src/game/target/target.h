@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 
-#define MAX_TARGETS  2
+#define MAX_TARGETS  5
 #define DUCK_W       86
 #define DUCK_H       86
 
@@ -14,8 +14,6 @@ typedef struct {
 	int anim_frame;
 	bool active;
 } Target;
-
-extern int score;
 
 void target_init();
 void target_spawn();

@@ -57,10 +57,10 @@ void target_init() {
 	duck_up_pixels = (uint32_t*) xpm_load((xpm_map_t) duck_up_xpm, XPM_8_8_8_8, &duck_up_info);
 	duck_down_pixels = (uint32_t*) xpm_load((xpm_map_t) duck_down_xpm, XPM_8_8_8_8, &duck_down_info);
 	srand(timer_counter);
-	for (int i = 0; i < MAX_TARGETS; i++)
+	for (int i = 0; i < MAX_TARGETS; i++) {
 		targets[i].active = false;
-	score_reset();
-	spawn_one(0);
+		spawn_one(i);
+	}
 }
 
 void target_spawn() {
@@ -73,7 +73,6 @@ void target_spawn() {
 }
 
 void target_update() {
-	bool any_active = false;
 	for (int i = 0; i < MAX_TARGETS; i++) {
 		if (!targets[i].active) continue;
 
@@ -97,12 +96,18 @@ void target_update() {
 			targets[i].active = false;
 			continue;
 		}
-
-		any_active = true;
 	}
 
-	if (!any_active)
+	int active_count = 0;
+	for (int i = 0; i < MAX_TARGETS; i++) {
+		if (targets[i].active)
+			active_count++;
+	}
+
+	while (active_count < MAX_TARGETS) {
 		target_spawn();
+		active_count++;
+	}
 }
 
 void target_draw() {
@@ -121,7 +126,7 @@ bool target_check_hit(int mx, int my) {
 		    my >= targets[i].y && my <= targets[i].y + DUCK_H) {
 			targets[i].active = false;
 			score_add(1);
-			target_spawn();
+			spawn_one(i);
 			return true;
 		}
 	}
