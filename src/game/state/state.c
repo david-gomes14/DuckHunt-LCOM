@@ -9,6 +9,7 @@
 #include "../score/score.h"
 
 #include "../../images/background.xpm"
+#include "../../images/score.xpm"
 
 #define GAME_DURATION_TICKS (60 * 60)
 
@@ -40,6 +41,7 @@ void state_enter_menu() {
 
 void state_enter_playing() {
     draw_pixmap((xpm_map_t) background_xpm, 0, 0);
+    draw_sprite((xpm_map_t) score_xpm, 10, 10, 0x000000);
     vg_store_background();
     hud_draw(score_get(), state_get_time());
     mouse_x = 576;

@@ -41,8 +41,8 @@ void hud_draw(int score, int time_left) {
     int score_tens = score / 10;
     int score_units = score % 10;
 
-    draw_number(score_tens, 20, 20);
-    draw_number(score_units, 60, 20);
+    draw_number(score_tens, 250, 20);
+    draw_number(score_units, 290, 20);
 
     int time_tens = time_left / 10;
     int time_units = time_left % 10;
