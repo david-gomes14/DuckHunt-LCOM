@@ -49,6 +49,8 @@ void handle_keyboard() {
 }
 
 void handle_mouse() {
+	static bool last_lb = false;
+
     mouse_ih();
 
     if (mouse_error || state != STATE_PLAYING) {
@@ -68,7 +70,9 @@ void handle_mouse() {
 		if (mouse_x >= 1152) mouse_x = 1151;
 		if (mouse_y >= 864)  mouse_y = 863;
 	}
-	if (pp.lb) {
+	if (pp.lb && !last_lb) {
 		target_check_hit(mouse_x, mouse_y);
     }
+
+	last_lb = pp.lb;
 }
