@@ -18,7 +18,6 @@
 #define ANIM_INTERVAL      15  /* frames entre mudança de sprite */
 
 static Target targets[MAX_TARGETS];
-extern int score;
 
 /* Cached duck pixels — loaded once, reused every frame */
 static uint32_t *duck_up_pixels = NULL;

@@ -18,7 +18,6 @@ game_state_t state = STATE_MENU;
 
 extern int mouse_x;
 extern int mouse_y;
-extern int score;
 
 static int ticks_remaining = 0;
 
@@ -45,6 +44,7 @@ void state_enter_playing() {
     draw_sprite((xpm_map_t) score_xpm, 10, 10, 0x000000);
     draw_sprite((xpm_map_t) time_xpm, 820, 10, 0x000000);
     vg_store_background();
+    hud_init();
     hud_draw(score_get(), state_get_time());
     mouse_x = 576;
     mouse_y = 432;
