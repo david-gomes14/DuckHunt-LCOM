@@ -10,17 +10,26 @@
 
 static int menu_selection;
 
+static uint32_t *menu_start_pixels = NULL;
+static uint32_t *menu_quit_pixels  = NULL;
+static xpm_image_t menu_start_info;
+static xpm_image_t menu_quit_info;
+
 void menu_init() {
     menu_selection = 0;
+    if (menu_start_pixels == NULL)
+        menu_start_pixels = (uint32_t*) xpm_load((xpm_map_t) menu_start_xpm, XPM_8_8_8_8, &menu_start_info);
+    if (menu_quit_pixels == NULL)
+        menu_quit_pixels  = (uint32_t*) xpm_load((xpm_map_t) menu_quit_xpm,  XPM_8_8_8_8, &menu_quit_info);
 }
 
 void menu_draw() {
+    uint32_t *pixels = (menu_selection == 0) ? menu_start_pixels : menu_quit_pixels;
+    xpm_image_t *info = (menu_selection == 0) ? &menu_start_info : &menu_quit_info;
 
-    if (menu_selection == 0)
-        draw_pixmap((xpm_map_t) menu_start_xpm, 0, 0);
-
-    else
-        draw_pixmap((xpm_map_t) menu_quit_xpm, 0, 0);
+    for (int i = 0; i < info->height; i++)
+        for (int j = 0; j < info->width; j++)
+            draw_pixel(j, i, pixels[i * info->width + j]);
 
     vg_store_background();
 }
