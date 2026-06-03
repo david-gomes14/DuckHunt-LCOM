@@ -4,6 +4,7 @@
 
 #include "game.h"
 
+#include "../rtc/rtc.h"
 #include "../timer/timer.h"
 #include "../keyboard/kbc.h"
 #include "../mouse/mouse.h"
