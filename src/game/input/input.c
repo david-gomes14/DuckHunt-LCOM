@@ -63,8 +63,8 @@ void handle_mouse() {
 
 	mouse_parse_packet(mouse_packet, &pp);
 	if (!pp.x_ov && !pp.y_ov) {
-		mouse_x += pp.delta_x;
-		mouse_y -= pp.delta_y;
+		mouse_x += pp.delta_x * 3 / 4;
+		mouse_y -= pp.delta_y * 3 / 4;
 		if (mouse_x < 0)    mouse_x = 0;
 		if (mouse_y < 0)    mouse_y = 0;
 		if (mouse_x >= 1152) mouse_x = 1151;
