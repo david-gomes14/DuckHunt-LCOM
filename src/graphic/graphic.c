@@ -14,15 +14,13 @@ static unsigned bytes_per_pixel;
 static unsigned int vram_size;
 
 int set_graphics_mode(uint16_t mode) {
-
 	reg86_t reg;
 	memset(&reg, 0, sizeof(reg));
 
-	reg.intno = 0x10;
-	reg.ah = 0x4F;
-	reg.al = 0x02;
-
-	reg.bx = mode | BIT(14);
+	reg.intno = 0x10;  // interrupção BIOS de vídeo
+	reg.ah = 0x4F;     // VBE
+	reg.al = 0x02;     // função "set mode"
+	reg.bx = mode | BIT(14);  // BIT(14) ativa linear frame buffer
 
 	if (sys_int86(&reg) != OK) {
 		printf("\tvg_exit(): sys_int86() failed \n");
@@ -44,24 +42,24 @@ int map_video_memory(uint16_t mode) {
 	bytes_per_pixel = (vmi.BitsPerPixel + 7) / 8;
 
 	unsigned int vram_base = vmi.PhysBasePtr;
-	vram_size = vmi.XResolution * vmi.YResolution * bytes_per_pixel;
+	vram_size = vmi.XResolution * vmi.YResolution * bytes_per_pixel;  // ~3.8 MB para 1152x864x32bit
 
+	// dá permissão ao processo para aceder à memória física da VRAM
 	mr.mr_base = (phys_bytes) vram_base;
 	mr.mr_limit = mr.mr_base + vram_size;
-
-
 	if (OK != (r = sys_privctl(SELF, SYS_PRIV_ADD_MEM, &mr))) {
 		printf("sys_privctl (ADD_MEM) failed: %d\n", r);
 		return 1;
 	}
 
+	// mapeia a VRAM física no espaço de endereçamento virtual do processo
 	video_mem = vm_map_phys(SELF, (void *) mr.mr_base, vram_size);
-
-	if(video_mem == MAP_FAILED) {
+	if (video_mem == MAP_FAILED) {
 		printf("couldn't map video memory");
 		return 1;
 	}
-   
+
+	// back_buffer: frame atual em RAM (todas as funções draw_* escrevem aqui)
 	back_buffer = malloc(vram_size);
 	if (back_buffer == NULL) {
 		printf("couldn't allocate back buffer\n");
@@ -69,6 +67,7 @@ int map_video_memory(uint16_t mode) {
 	}
 	memset(back_buffer, 0, vram_size);
 
+	// bg_buffer: snapshot do fundo limpo; restaurado no início de cada frame
 	bg_buffer = malloc(vram_size);
 	if (bg_buffer == NULL) {
 		printf("couldn't allocate bg buffer\n");
@@ -77,7 +76,6 @@ int map_video_memory(uint16_t mode) {
 	memset(bg_buffer, 0, vram_size);
 
 	return 0;
-
 }
 
 
@@ -128,8 +126,10 @@ int draw_pixmap(xpm_map_t xpm, uint16_t x, uint16_t y) {
 void draw_sprite(uint32_t *pixels, xpm_image_t *info, int x, int y, bool facing_left) {
     for (int i = 0; i < info->height; i++) {
         for (int j = 0; j < info->width; j++) {
+            // se facing_left, lê as colunas ao contrário para flip horizontal
             int src_j = facing_left ? (info->width - 1 - j) : j;
             uint32_t c = pixels[i * info->width + src_j];
+            // alpha == 0 significa pixel com cor; alpha != 0 é transparente ("None" no XPM)
             if ((c >> 24) == 0)
                 draw_pixel(x + j, y + i, c);
         }

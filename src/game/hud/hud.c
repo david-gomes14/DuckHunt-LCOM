@@ -59,3 +59,7 @@ void hud_draw(int score, int time_left) {
     draw_value(time_left, TIME_X,  TIME_Y);
 }
 
+void hud_draw_score_at(int score, int x, int y) {
+    draw_value(score, x, y);
+}
+

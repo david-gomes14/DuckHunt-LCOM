@@ -10,15 +10,15 @@
 #include "../../images/duck_up.xpm"
 #include "../../images/duck_down.xpm"
 
-#define SCREEN_W           1152
-#define SCREEN_H           864
-#define DUCK_SPEED_X       4   /* pixels/frame horizontal */
-#define WOBBLE_INTERVAL    40  /* frames between vertical direction changes */
-#define ANIM_INTERVAL      15  /* frames entre mudança de sprite */
+#define SCREEN_W 1152
+#define SCREEN_H 864
+#define DUCK_SPEED_X 4       // pixels por frame na horizontal
+#define WOBBLE_INTERVAL 40   // frames entre mudanças de direção vertical
+#define ANIM_INTERVAL 15     // frames entre troca de sprite (asa cima/baixo)
 
 static Target targets[MAX_TARGETS];
 
-/* Cached duck pixels — loaded once, reused every frame */
+// sprites carregados uma vez no target_init e reutilizados em cada frame
 static uint32_t *duck_up_pixels = NULL;
 static uint32_t *duck_down_pixels = NULL;
 static xpm_image_t duck_up_info;
@@ -32,12 +32,12 @@ static void draw_duck(int x, int y, bool flap_up, bool facing_left) {
 }
 
 static void spawn_one(int slot) {
-	int dir = (rand() % 2 == 0) ? 1 : -1;  /* 1 = left→right, -1 = right→left */
+	int dir = (rand() % 2 == 0) ? 1 : -1;  // 1 = esquerda→direita, -1 = direita→esquerda
 	targets[slot].anim_frame = 0;
-	targets[slot].dx     = dir * DUCK_SPEED_X;
-	targets[slot].dy     = (rand() % 3) - 1;  /* -1, 0 or +1 */
-	targets[slot].x      = (dir == 1) ? -DUCK_W : SCREEN_W;
-	targets[slot].y      = 60 + rand() % (SCREEN_H - DUCK_H - 120); /* avoid very top/bottom */
+	targets[slot].dx = dir * DUCK_SPEED_X;
+	targets[slot].dy = (rand() % 3) - 1;   // velocidade vertical: -1, 0 ou +1
+	targets[slot].x = (dir == 1) ? -DUCK_W : SCREEN_W;  // entra fora do ecrã
+	targets[slot].y = 60 + rand() % (SCREEN_H - DUCK_H - 120);  // zona central, evita topo/fundo
 	targets[slot].wobble = 0;
 	targets[slot].active = true;
 }
@@ -46,7 +46,7 @@ static void spawn_one(int slot) {
 void target_init() {
 	duck_up_pixels = (uint32_t*) xpm_load((xpm_map_t) duck_up_xpm, XPM_8_8_8_8, &duck_up_info);
 	duck_down_pixels = (uint32_t*) xpm_load((xpm_map_t) duck_down_xpm, XPM_8_8_8_8, &duck_down_info);
-	srand(timer_counter);
+	srand(timer_counter);  // seed baseada no tempo para direções diferentes a cada jogo
 	for (int i = 0; i < MAX_TARGETS; i++) {
 		targets[i].active = false;
 		spawn_one(i);
@@ -70,30 +70,30 @@ void target_update() {
 		targets[i].x += targets[i].dx;
 		targets[i].y += targets[i].dy;
 
-		/* vertical wobble — change dy periodically */
+		// muda a direção vertical de vez em quando para o pato não voar em linha reta
 		targets[i].wobble++;
 		if (targets[i].wobble >= WOBBLE_INTERVAL) {
-			targets[i].dy   = (rand() % 3) - 1;
+			targets[i].dy = (rand() % 3) - 1;
 			targets[i].wobble = 0;
 		}
 
-		/* clamp vertical so duck stays on screen */
-		if (targets[i].y < 30)              targets[i].y = 30;
+		// mantém o pato dentro dos limites verticais do ecrã
+		if (targets[i].y < 30) targets[i].y = 30;
 		if (targets[i].y > SCREEN_H - DUCK_H - 30) targets[i].y = SCREEN_H - DUCK_H - 30;
 
-		/* despawn when duck flies off-screen horizontally */
+		// quando sai pelo lado, desativa para poder ser substituído
 		if (targets[i].x > SCREEN_W || targets[i].x < -DUCK_W) {
 			targets[i].active = false;
 			continue;
 		}
 	}
 
+	// garante que há sempre MAX_TARGETS patos ativos em simultâneo
 	int active_count = 0;
 	for (int i = 0; i < MAX_TARGETS; i++) {
 		if (targets[i].active)
 			active_count++;
 	}
-
 	while (active_count < MAX_TARGETS) {
 		target_spawn();
 		active_count++;

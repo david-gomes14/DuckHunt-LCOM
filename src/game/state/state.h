@@ -13,6 +13,7 @@ extern game_state_t state;
 void state_render();
 void state_enter_menu();
 void state_enter_playing();
+void state_enter_game_over();
 void state_tick();
 int state_get_time();
 
