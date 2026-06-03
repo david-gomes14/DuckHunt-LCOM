@@ -10,4 +10,5 @@ trace.txt
 output.txt
 .gdbinit
 proj
+core.*
 
