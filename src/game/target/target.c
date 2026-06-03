@@ -28,7 +28,7 @@ static xpm_image_t duck_down_info;
 static void draw_duck(int x, int y, bool flap_up, bool facing_left) {
 	uint32_t *pixels = flap_up ? duck_up_pixels : duck_down_pixels;
 	xpm_image_t *info = flap_up ? &duck_up_info : &duck_down_info;
-	draw_pixels(pixels, info, x, y, facing_left);
+	draw_sprite(pixels, info, x, y, facing_left);
 }
 
 static void spawn_one(int slot) {

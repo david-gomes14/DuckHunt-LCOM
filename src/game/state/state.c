@@ -45,8 +45,8 @@ void state_enter_menu() {
 
 void state_enter_playing() {
     draw_pixmap((xpm_map_t) background_xpm, 0, 0);
-    draw_sprite((xpm_map_t) score_xpm, 10, 10);
-    draw_sprite((xpm_map_t) time_xpm, 820, 10);
+    draw_pixmap((xpm_map_t) score_xpm, 10, 10);
+    draw_pixmap((xpm_map_t) time_xpm, 820, 10);
     vg_store_background();
     hud_init();
     hud_draw(score_get(), state_get_time());

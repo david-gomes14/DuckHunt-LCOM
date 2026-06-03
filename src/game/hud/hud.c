@@ -40,7 +40,7 @@ void hud_init() {
 
 static void draw_number(int n, int x, int y) {
     if (n < 0 || n > 9) return;
-    draw_pixels(digit_pixels[n], &digit_info[n], x, y, false);
+    draw_sprite(digit_pixels[n], &digit_info[n], x, y, false);
 }
 
 static void draw_value(int val, int x, int y) {

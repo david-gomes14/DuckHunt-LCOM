@@ -27,7 +27,7 @@ void menu_draw() {
     uint32_t *pixels = (menu_selection == 0) ? menu_start_pixels : menu_quit_pixels;
     xpm_image_t *info = (menu_selection == 0) ? &menu_start_info : &menu_quit_info;
 
-    draw_pixels(pixels, info, 0, 0, false);
+    draw_sprite(pixels, info, 0, 0, false);
 
     vg_store_background();
 }
