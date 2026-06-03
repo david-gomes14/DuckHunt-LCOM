@@ -10,7 +10,6 @@
 #include "../../images/duck_up.xpm"
 #include "../../images/duck_down.xpm"
 
-#define TRANSPARENT_COLOR  0xFF00FF
 #define SCREEN_W           1152
 #define SCREEN_H           864
 #define DUCK_SPEED_X       4   /* pixels/frame horizontal */
@@ -29,15 +28,7 @@ static xpm_image_t duck_down_info;
 static void draw_duck(int x, int y, bool flap_up, bool facing_left) {
 	uint32_t *pixels = flap_up ? duck_up_pixels : duck_down_pixels;
 	xpm_image_t *info = flap_up ? &duck_up_info : &duck_down_info;
-
-	for (int i = 0; i < info->height; i++) {
-		for (int j = 0; j < info->width; j++) {
-			int src_j = facing_left ? (info->width - 1 - j) : j;
-			uint32_t c = pixels[i * info->width + src_j];
-			if ((c >> 24) == 0)
-				draw_pixel(x + j, y + i, c);
-		}
-	}
+	draw_sprite(pixels, info, x, y, facing_left);
 }
 
 static void spawn_one(int slot) {
