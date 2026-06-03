@@ -3,5 +3,6 @@
 
 void hud_init();
 void hud_draw(int score, int time_left);
+void hud_draw_score_at(int score, int x, int y);
 
 #endif

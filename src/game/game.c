@@ -21,34 +21,33 @@ static uint8_t kbc_irq;
 static uint8_t mouse_irq;
 
 void game_init() {
+	// map antes de set: a VRAM tem de estar mapeada antes de mudar o modo de vídeo
 	map_video_memory(0x14C);
 	set_graphics_mode(0x14C);
 
 	timer_subscribe_int(&timer_irq);
 	kbc_subscribe_int(&kbc_irq);
 	mouse_subscribe_int(&mouse_irq);
-	mouse_enable_data();
+	mouse_enable_data();  // envia 0xF4 ao rato para começar a enviar pacotes
 
-	timer_set_frequency(0, 60);
+	timer_set_frequency(0, 60);  // 60 Hz — batimento cardíaco do jogo
 
 	menu_init();
 	menu_draw();
-
-	printf("init\n");
 }
 
 void game_loop() {
-
 	int ipc_status;
 	message msg;
 	uint32_t r;
 
+	// bitmasks para identificar qual dispositivo disparou a interrupção
 	uint32_t irq_set_timer = BIT(timer_irq);
 	uint32_t irq_set_kbd   = BIT(kbc_irq);
 	uint32_t irq_set_mouse = BIT(mouse_irq);
 
 	while (state != STATE_EXIT) {
-
+		// bloqueia até chegar uma mensagem de interrupção do MINIX
 		if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
 			printf("driver_receive failed with: %d", r);
 			continue;
@@ -57,29 +56,22 @@ void game_loop() {
 		if (is_ipc_notify(ipc_status)) {
 			switch (_ENDPOINT_P(msg.m_source)) {
 				case HARDWARE:
-
+					// o campo interrupts é um bitmask — pode ter vários bits ativos ao mesmo tempo
 					if (msg.m_notify.interrupts & irq_set_timer) {
 						timer_int_handler();
 						state_tick();
-						state_render();
+						state_render();  // render só aqui, a 60 Hz
 					}
-
-					if (msg.m_notify.interrupts & irq_set_kbd) {
+					if (msg.m_notify.interrupts & irq_set_kbd)
 						handle_keyboard();
-					}
-
-					if (msg.m_notify.interrupts & irq_set_mouse) {
+					if (msg.m_notify.interrupts & irq_set_mouse)
 						handle_mouse();
-					}
-
 					break;
 				default:
 					break;
 			}
 		}
 	}
-
-	printf("loop\n");
 }
 
 void game_cleanup() {
@@ -89,5 +81,4 @@ void game_cleanup() {
 	mouse_unsubscribe_int();
 	vg_free_buffer();
 	vg_exit();
-	printf("cleanup\n");
 }
