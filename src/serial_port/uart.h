@@ -13,6 +13,8 @@
 #define COM2_BASE_ADDR 0x2F8
 
 
+
+
 /*
 * UART Base address offsets (from reading from 0x3F8 or 0x2F8)
 */

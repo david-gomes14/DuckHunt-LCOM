@@ -8,6 +8,15 @@ int serial_port_hook_id = COM1_IRQ;
 uint8_t serial_port_byte;
 bool serial_port_error;
 
+int (serial_port_connect)(uint16_t baud_rate, uint8_t *bit_no) {
+    if(serialport_set_baud_rate(baud_rate) != 0) return 1;
+    if(serial_port_format_data() != 0) return 1;
+    if(serial_port_enableinterrupts() != 0) return 1;
+    if(serial_port_subscribe_int(bit_no) != 0) return 1;
+
+    return 0;
+}
+
 int (serial_port_subscribe_int)(uint8_t * bit_no) {
     if(bit_no == NULL) return 1;
 
@@ -26,11 +35,45 @@ int (serial_port_set_baud_rate)(uint16_t baud_rate) {
     uint8_t lcr;
     if(util_sys_inb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
 
-    lcr |= DLAB; //activate DLAB to set the baud rate
+    lcr |= DLAB; 
 
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
 
+    uint8_t dll = baud_rate & 0xFF;
+    uint8_t dlm = (baud_rate & 0xFF00) >> 8;
 
+    if(sys_outb(COM1_BASE_ADDR, &dll) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + 1, &dlm) != 0) return 1;
+ 
+    lcr &= ~DLAB;
+
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
     
+    return 0;
+}
+
+int (serial_port_format_data)(){
+    uint8_t lcr;
+    if(util_sys_inb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
+
+    lcr |= BIT(0) | BIT(1);
+    uint8_t mask = BIT(2) | BIT(3) | BIT(4) | BIT(5);
+    lcr &= ~mask;
+
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
+
+    return 0;
+}
+
+int (serial_port_enableinterrupts)() {
+    uint8_t ier;
+    
+    if(util_sys_inb(COM1_BASE_ADDR + INTERRUPT_ENABLE_REGISTER, &ier) != 0) return 1;
+
+    ier |= BIT(0);
+
+    if(sys_outb(COM1_BASE_ADDR + INTERRUPT_ENABLE_REGISTER, &ier) != 0) return 1;
+
     return 0;
 }
 
