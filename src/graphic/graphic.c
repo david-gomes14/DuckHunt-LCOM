@@ -116,34 +116,29 @@ int draw_rectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint
 	return 0;
 }
 
-int draw_sprite(xpm_map_t xpm, int x, int y, uint32_t transparent_color) {
+int draw_sprite(xpm_map_t xpm, int x, int y) {
 	xpm_image_t img;
 	uint32_t *colors = (uint32_t*) xpm_load(xpm, XPM_8_8_8_8, &img);
-	for (int i = 0; i < img.height; i++) {
-		for (int j = 0; j < img.width; j++) {
-			if ((*colors & 0x00FFFFFF) != (transparent_color & 0x00FFFFFF))
-				draw_pixel(x + j, y + i, *colors);
-			colors++;
-		}
-	}
+	draw_pixels(colors, &img, x, y, false);
 	return 0;
 }
 
 int draw_pixmap(xpm_map_t xpm, uint16_t x, uint16_t y) {
-
 	xpm_image_t img;
-
 	uint32_t *colors = (uint32_t*) xpm_load(xpm, XPM_8_8_8_8, &img);
-
-	for (int i = 0 ; i < img.height ; i++) {
-		for (int j = 0 ; j < img.width ; j++) {
-			if (draw_pixel(x + j, y + i, *colors) != 0) {
-				return 1;
-			}
-			colors++;
-		}
-	}
+	draw_pixels(colors, &img, x, y, false);
 	return 0;
+}
+
+void draw_pixels(uint32_t *pixels, xpm_image_t *info, int x, int y, bool facing_left) {
+    for (int i = 0; i < info->height; i++) {
+        for (int j = 0; j < info->width; j++) {
+            int src_j = facing_left ? (info->width - 1 - j) : j;
+            uint32_t c = pixels[i * info->width + src_j];
+            if ((c >> 24) == 0)
+                draw_pixel(x + j, y + i, c);
+        }
+    }
 }
 
 

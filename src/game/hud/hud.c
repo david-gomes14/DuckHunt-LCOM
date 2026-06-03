@@ -40,14 +40,7 @@ void hud_init() {
 
 static void draw_number(int n, int x, int y) {
     if (n < 0 || n > 9) return;
-    xpm_image_t *info = &digit_info[n];
-    uint32_t *px = digit_pixels[n];
-    for (int i = 0; i < info->height; i++)
-        for (int j = 0; j < info->width; j++) {
-            uint32_t c = px[i * info->width + j];
-            if ((c & 0x00FFFFFF) != 0x000000)
-                draw_pixel(x + j, y + i, c);
-        }
+    draw_pixels(digit_pixels[n], &digit_info[n], x, y, false);
 }
 
 static void draw_value(int val, int x, int y) {
