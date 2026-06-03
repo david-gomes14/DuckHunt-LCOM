@@ -37,7 +37,7 @@ static void spawn_one(int slot) {
 	targets[slot].dx = dir * DUCK_SPEED_X;
 	targets[slot].dy = (rand() % 3) - 1;   // velocidade vertical: -1, 0 ou +1
 	targets[slot].x = (dir == 1) ? -DUCK_W : SCREEN_W;  // entra fora do ecrã
-	targets[slot].y = 60 + rand() % (SCREEN_H - DUCK_H - 120);  // zona central, evita topo/fundo
+	targets[slot].y = 220 + rand() % (SCREEN_H - DUCK_H - 280);  // abaixo das placas do HUD
 	targets[slot].wobble = 0;
 	targets[slot].active = true;
 }
@@ -77,8 +77,8 @@ void target_update() {
 			targets[i].wobble = 0;
 		}
 
-		// mantém o pato dentro dos limites verticais do ecrã
-		if (targets[i].y < 30) targets[i].y = 30;
+		// mantém o pato abaixo das placas do HUD e acima do fundo
+		if (targets[i].y < 220) targets[i].y = 220;
 		if (targets[i].y > SCREEN_H - DUCK_H - 30) targets[i].y = SCREEN_H - DUCK_H - 30;
 
 		// quando sai pelo lado, desativa para poder ser substituído

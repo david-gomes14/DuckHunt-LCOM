@@ -9,14 +9,12 @@
 #include "../score/score.h"
 
 #include "../../images/background.xpm"
-#include "../../images/score.xpm"
-#include "../../images/time.xpm"
 #include "../../images/game_over.xpm"
 
 #define CROSSHAIR_COLOR 0xFF0000
 #define GAME_DURATION_TICKS (60 * 60)
 #define GAMEOVER_SCORE_X 618
-#define GAMEOVER_SCORE_Y 488
+#define GAMEOVER_SCORE_Y 473
 
 #define SCREEN_W 1152
 #define SCREEN_H 864
@@ -47,9 +45,7 @@ void state_enter_menu() {
 }
 
 void state_enter_playing() {
-    draw_pixmap((xpm_map_t) background_xpm, 0, 0);
-    draw_pixmap((xpm_map_t) score_xpm, 10, 10);
-    draw_pixmap((xpm_map_t) time_xpm, 820, 10);
+    draw_pixmap((xpm_map_t) background, 0, 0);
     vg_store_background();
     hud_init();
     hud_draw(score_get(), state_get_time());
@@ -63,7 +59,7 @@ void state_enter_playing() {
 
 void state_enter_game_over() {
     draw_pixmap((xpm_map_t) game_over, 0, 0);
-    hud_draw_score_at(score_get(), GAMEOVER_SCORE_X, GAMEOVER_SCORE_Y);
+    hud_draw_score_large_at(score_get(), GAMEOVER_SCORE_X, GAMEOVER_SCORE_Y);
     vg_store_background();
     state = STATE_GAME_OVER;
 }
