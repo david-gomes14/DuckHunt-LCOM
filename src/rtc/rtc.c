@@ -35,17 +35,23 @@ int rtc_read_date(rtc_date_t *date) {
 	r = rtc_read_reg(RTC_REG_B, &regB);
 	if (r != 0) return r;
 	bool binary = (regB & RTC_DM_MSK) != 0;
-	uint8_t day, month, year;
-	r = rtc_read_reg(RTC_REG_DAY, &day);     if (r != 0) return r;
-	r = rtc_read_reg(RTC_REG_MONTH, &month); if (r != 0) return r;
-	r = rtc_read_reg(RTC_REG_YEAR, &year);   if (r != 0) return r;
-	if(!binary){
-		day = bcd_to_bin(day);
-		month = bcd_to_bin(month);
-		year = bcd_to_bin(year);
+	uint8_t hours, minutes, day, month, year;
+	r = rtc_read_reg(RTC_REG_HOURS,   &hours);   if (r != 0) return r;
+	r = rtc_read_reg(RTC_REG_MINUTES, &minutes); if (r != 0) return r;
+	r = rtc_read_reg(RTC_REG_DAY,     &day);     if (r != 0) return r;
+	r = rtc_read_reg(RTC_REG_MONTH,   &month);   if (r != 0) return r;
+	r = rtc_read_reg(RTC_REG_YEAR,    &year);    if (r != 0) return r;
+	if (!binary) {
+		hours   = bcd_to_bin(hours);
+		minutes = bcd_to_bin(minutes);
+		day     = bcd_to_bin(day);
+		month   = bcd_to_bin(month);
+		year    = bcd_to_bin(year);
 	}
-	date->day = day;
-	date->month = month;
-	date->year = 2000 + year;
+	date->hour   = hours;
+	date->minute = minutes;
+	date->day    = day;
+	date->month  = month;
+	date->year   = 2000 + year;
 	return 0;
 }

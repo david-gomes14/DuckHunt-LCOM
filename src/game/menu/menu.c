@@ -6,40 +6,37 @@
 #include "../state/state.h"
 
 #include "../../images/menu_start.xpm"
+#include "../../images/menu_leaderboard.xpm"
 #include "../../images/menu_quit.xpm"
 
 static int menu_selection;
 
-static uint32_t *menu_start_pixels = NULL;
-static uint32_t *menu_quit_pixels  = NULL;
-static xpm_image_t menu_start_info;
-static xpm_image_t menu_quit_info;
+static uint32_t *menu_pixels[3];
+static xpm_image_t menu_info[3];
 
 void menu_init() {
     menu_selection = 0;
-    if (menu_start_pixels == NULL)
-        menu_start_pixels = (uint32_t*) xpm_load((xpm_map_t) menu_start_xpm, XPM_8_8_8_8, &menu_start_info);
-    if (menu_quit_pixels == NULL)
-        menu_quit_pixels  = (uint32_t*) xpm_load((xpm_map_t) menu_quit_xpm,  XPM_8_8_8_8, &menu_quit_info);
+    if (menu_pixels[0] == NULL) {
+        menu_pixels[0] = (uint32_t*) xpm_load((xpm_map_t) menu_start,       XPM_8_8_8_8, &menu_info[0]);
+        menu_pixels[1] = (uint32_t*) xpm_load((xpm_map_t) menu_leaderboard, XPM_8_8_8_8, &menu_info[1]);
+        menu_pixels[2] = (uint32_t*) xpm_load((xpm_map_t) menu_quit,        XPM_8_8_8_8, &menu_info[2]);
+    }
 }
 
 void menu_draw() {
-    uint32_t *pixels = (menu_selection == 0) ? menu_start_pixels : menu_quit_pixels;
-    xpm_image_t *info = (menu_selection == 0) ? &menu_start_info : &menu_quit_info;
-
-    draw_sprite(pixels, info, 0, 0, false);
-
+    draw_sprite(menu_pixels[menu_selection], &menu_info[menu_selection], 0, 0, false);
     vg_store_background();
 }
 
 bool menu_move_up() {
     if (menu_selection == 0) return false;
-    menu_selection = 0;
+    menu_selection--;
     return true;
 }
+
 bool menu_move_down() {
-    if (menu_selection == 1) return false;
-    menu_selection = 1;
+    if (menu_selection == 2) return false;
+    menu_selection++;
     return true;
 }
 
@@ -48,5 +45,9 @@ bool menu_select() {
         state_enter_playing();
         return true;
     }
-    return false;
+    if (menu_selection == 1) {
+        state_enter_leaderboard();
+        return true;
+    }
+    return false;  // QUIT → caller trata de STATE_EXIT
 }

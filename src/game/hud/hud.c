@@ -94,6 +94,44 @@ void hud_draw_score_at(int score, int x, int y) {
     draw_value(score, x, y);
 }
 
+void hud_draw_number_at(int n, int x, int y) {
+    draw_number(n, x, y);
+}
+
+// desenha "HH:MM | DD-MM" a partir de x,y — separadores a dourado.
+// barra vertical separa hora da data. largura total ≈ 372px
+void hud_draw_datetime_at(uint8_t hour, uint8_t minute, uint8_t day, uint8_t month, int x, int y) {
+    #define SEP_COLOR 0xFFB800
+
+    // HH
+    draw_number(hour   / 10, x,                  y);
+    draw_number(hour   % 10, x + DIGIT_SPACING,  y);
+    // : (dois quadrados 4x4), centrado verticalmente ao lado dos dígitos
+    int cx = x + DIGIT_SPACING + 42;
+    draw_rectangle(cx, y + 19, 4, 4, SEP_COLOR);
+    draw_rectangle(cx, y + 33, 4, 4, SEP_COLOR);
+    // MM
+    int mm_x = cx + 12;
+    draw_number(minute / 10, mm_x,                 y);
+    draw_number(minute % 10, mm_x + DIGIT_SPACING, y);
+    // separador vertical entre hora e data (barra dourada 4×26)
+    int bar_x = mm_x + DIGIT_SPACING + 50;
+    draw_rectangle(bar_x, y + 12, 4, 26, SEP_COLOR);
+    // DD
+    int date_x = bar_x + 18;
+    draw_number(day   / 10, date_x,                 y);
+    draw_number(day   % 10, date_x + DIGIT_SPACING, y);
+    // - (rectângulo horizontal 10x4)
+    int dash_x = date_x + DIGIT_SPACING + 44;
+    draw_rectangle(dash_x, y + 23, 10, 4, SEP_COLOR);
+    // MM (mês)
+    int mon_x = dash_x + 16;
+    draw_number(month / 10, mon_x,                 y);
+    draw_number(month % 10, mon_x + DIGIT_SPACING, y);
+
+    #undef SEP_COLOR
+}
+
 void hud_draw_score_large_at(int score, int x, int y) {
     score %= 1000;
     int hundreds = score / 100;
