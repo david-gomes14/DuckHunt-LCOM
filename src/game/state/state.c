@@ -7,6 +7,7 @@
 #include "../target/target.h"
 #include "../hud/hud.h"
 #include "../score/score.h"
+#include "../leaderboard/leaderboard.h"
 
 #include "../../images/background.xpm"
 #include "../../images/game_over.xpm"
@@ -58,6 +59,14 @@ void state_enter_playing() {
 }
 
 void state_enter_game_over() {
+    leaderboard_add(score_get());
+
+    leaderboard_entry_t *entries = leaderboard_get();
+    for (int i = 0; i < leaderboard_size(); i++) {
+        printf("%d - %d pts (%02d/%02d/%04d)\n",
+               i + 1, entries[i].score, entries[i].date.day, entries[i].date.month, entries[i].date.year);
+    }
+
     draw_pixmap((xpm_map_t) game_over, 0, 0);
     hud_draw_score_large_at(score_get(), GAMEOVER_SCORE_X, GAMEOVER_SCORE_Y);
     vg_store_background();

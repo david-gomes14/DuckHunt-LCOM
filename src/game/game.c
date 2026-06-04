@@ -14,6 +14,7 @@
 #include "input/input.h"
 #include "state/state.h"
 #include "target/target.h"
+#include "leaderboard/leaderboard.h"
 
 extern game_state_t state;
 
@@ -35,6 +36,8 @@ void game_init() {
 
 	menu_init();
 	menu_draw();
+
+	leaderboard_init();
 }
 
 void game_loop() {
