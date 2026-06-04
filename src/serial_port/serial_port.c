@@ -5,8 +5,7 @@
 #include "../utils/utils.h"
 
 int serial_port_hook_id = COM1_IRQ;
-uint8_t serial_port_byte;
-bool serial_port_error;
+uint8_t serial_port_data_available;
 
 int (serial_port_connect)(uint16_t baud_rate, uint8_t *bit_no) {
     if(serialport_set_baud_rate(baud_rate) != 0) return 1;
@@ -89,7 +88,35 @@ int (serial_port_read_byte)(uint8_t *byte) {
     return 0;
 }
 
-void (serial_port_ih)();
+int(serial_port_write_byte)(uint8_t byte) {
+    uint8_t lsr;
+
+    do {
+        if(util_sys_inb(COM1_BASE_ADDR + LINE_STATUS_REGISTER, &lsr) != 0) return 1;
+
+        if((lsr & (THR_EMPTY)) == 0) {
+            tickdelay(micros_to_ticks(1000));
+        }
+
+    }while((lsr & THR_EMPTY) == 0);
+
+
+    if(sys_outb(COM1_BASE_ADDR, byte) != 0) return 1;
+
+    return 0;
+}
+
+void (serial_port_ih)() {
+    uint8_t iir;
+
+    if(util_sys_inb(COM1_BASE_ADDR + INTERRUPT_IDENTIFICATION_REGISTER, &iir) != 0) return;
+
+    if((iir & RDA_MASK) != 0x04) return;
+
+    serial_port_read_byte(&serial_port_data_available);
+
+    return;
+}
 
 
 

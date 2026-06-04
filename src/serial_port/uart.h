@@ -12,6 +12,8 @@
 #define COM1_BASE_ADDR 0x3F8
 #define COM2_BASE_ADDR 0x2F8
 
+#define RDA_MASK 0x0E
+
 
 
 
@@ -51,5 +53,12 @@
 #define TRANSMITTER_EMPTY BIT(6)
 #define FIFO_ERROR BIT(7)
 
+
+/*
+* UART interrupt identification register bits
+*/
+#define INTERRUPT_PENDING BIT(0)
+#define REIVED_DATA_AVAILABLE_MASK BIT(2) 
+#define MODEM_STATUS_INTERRUPT BIT(3)
 
 #endif /* _LCOM_UART_H_ */
