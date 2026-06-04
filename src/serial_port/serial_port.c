@@ -77,9 +77,17 @@ int (serial_port_enableinterrupts)() {
     return 0;
 }
 
-int (serial_port_write_cmd)(uint8_t cmd) {}
+int (serial_port_read_byte)(uint8_t *byte) {
+    uint8_t lsr;
+    if(util_sys_inb(COM1_BASE_ADDR + LINE_STATUS_REGISTER, &lsr) != 0) return 1;
 
-int (serial_port_read_data)(uint8_t *data) {}
+    if((lsr & (OVERRUN_ERROR | PARITY_ERROR | FRAMING_ERROR)) != 0) return 1;
+    if((lsr & DATA_READY) == 0) return 1;
+
+    if(util_sys_inb(COM1_BASE_ADDR, byte) != 0) return 1;
+
+    return 0;
+}
 
 void (serial_port_ih)();
 

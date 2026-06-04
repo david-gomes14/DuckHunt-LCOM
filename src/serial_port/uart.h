@@ -39,5 +39,17 @@
 #define DLAB BIT(7)
 
 
+/*
+* UART line Status Register bits
+*/
+#define DATA_READY BIT(0)
+#define OVERRUN_ERROR BIT(1)
+#define PARITY_ERROR BIT(2)
+#define FRAMING_ERROR BIT(3)
+#define BREAK_INTERRUPT BIT(4)
+#define THR_EMPTY BIT(5)
+#define TRANSMITTER_EMPTY BIT(6)
+#define FIFO_ERROR BIT(7)
+
 
 #endif /* _LCOM_UART_H_ */
