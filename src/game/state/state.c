@@ -3,11 +3,13 @@
 #include "state.h"
 
 #include "../../graphic/graphic.h"
+#include "../../serial_port/uart.h"
 #include "../menu/menu.h"
 #include "../target/target.h"
 #include "../hud/hud.h"
 #include "../score/score.h"
 
+#include "../../serial_port/serial_port.h"
 #include "../../images/background.xpm"
 #include "../../images/game_over.xpm"
 
@@ -54,6 +56,8 @@ void state_enter_playing() {
     target_init();
     score_reset();
     ticks_remaining = GAME_DURATION_TICKS;
+
+    serial_port_write_byte(GAME_START);
     state = STATE_PLAYING;
 }
 
@@ -69,6 +73,13 @@ void state_tick() {
     ticks_remaining--;
     if (ticks_remaining <= 0) {
         state_enter_game_over();
+    }
+    if(score_get() == 10) {
+        serial_port_write_byte(GAME_OVER);
+
+        state_enter_game_over();
+        
+        state = STATE_GAME_OVER;
     }
 }
 

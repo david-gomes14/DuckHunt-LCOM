@@ -3,12 +3,15 @@
 #include "uart.h"
 #include "serial_port.h"
 #include "../utils/utils.h"
+#include "../state/state.h"
+
+extern game_state_t state;
 
 int serial_port_hook_id = COM1_IRQ;
 uint8_t serial_port_data_available;
 
-int (serial_port_connect)(uint16_t baud_rate, uint8_t *bit_no) {
-    if(serialport_set_baud_rate(baud_rate) != 0) return 1;
+int (serial_port_connect)(uint32_t baud_rate, uint8_t *bit_no) {
+    if(serial_port_set_baud_rate(baud_rate) != 0) return 1;
     if(serial_port_format_data() != 0) return 1;
     if(serial_port_enableinterrupts() != 0) return 1;
     if(serial_port_subscribe_int(bit_no) != 0) return 1;
@@ -30,23 +33,24 @@ int (serial_port_unsubscribe_int)() {
     return 0;
 }
 
-int (serial_port_set_baud_rate)(uint16_t baud_rate) {
+int (serial_port_set_baud_rate)(uint32_t baud_rate) {
     uint8_t lcr;
     if(util_sys_inb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
 
     lcr |= DLAB; 
 
-    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, lcr) != 0) return 1;
 
-    uint8_t dll = baud_rate & 0xFF;
-    uint8_t dlm = (baud_rate & 0xFF00) >> 8;
+    uint16_t divisor = RATE_115200 / baud_rate;
+    uint8_t dll = divisor & 0xFF;
+    uint8_t dlm = (divisor & 0xFF00) >> 8;
 
-    if(sys_outb(COM1_BASE_ADDR, &dll) != 0) return 1;
-    if(sys_outb(COM1_BASE_ADDR + 1, &dlm) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR, dll) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + 1, dlm) != 0) return 1;
  
     lcr &= ~DLAB;
 
-    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, lcr) != 0) return 1;
     
     return 0;
 }
@@ -59,7 +63,7 @@ int (serial_port_format_data)(){
     uint8_t mask = BIT(2) | BIT(3) | BIT(4) | BIT(5);
     lcr &= ~mask;
 
-    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, &lcr) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + LINE_CONTROL_REGISTER, lcr) != 0) return 1;
 
     return 0;
 }
@@ -71,7 +75,7 @@ int (serial_port_enableinterrupts)() {
 
     ier |= BIT(0);
 
-    if(sys_outb(COM1_BASE_ADDR + INTERRUPT_ENABLE_REGISTER, &ier) != 0) return 1;
+    if(sys_outb(COM1_BASE_ADDR + INTERRUPT_ENABLE_REGISTER, ier) != 0) return 1;
 
     return 0;
 }
@@ -81,14 +85,13 @@ int (serial_port_read_byte)(uint8_t *byte) {
     if(util_sys_inb(COM1_BASE_ADDR + LINE_STATUS_REGISTER, &lsr) != 0) return 1;
 
     if((lsr & (OVERRUN_ERROR | PARITY_ERROR | FRAMING_ERROR)) != 0) return 1;
-    if((lsr & DATA_READY) == 0) return 1;
 
     if(util_sys_inb(COM1_BASE_ADDR, byte) != 0) return 1;
 
     return 0;
 }
 
-int(serial_port_write_byte)(uint8_t byte) {
+int (serial_port_write_byte)(uint8_t byte) {
     uint8_t lsr;
 
     do {
@@ -106,17 +109,34 @@ int(serial_port_write_byte)(uint8_t byte) {
     return 0;
 }
 
+void (handle_uart)() {
+    serial_port_ih();
+
+    if(serial_port_data_available == GAME_OVER) {
+        serial_port_data_available = 0; 
+
+        state_enter_game_over();
+
+        state = STATE_GAME_OVER;
+    }
+
+    if(serial_port_data_available == GAME_START) {
+        serial_port_data_available = 0;
+
+        state_enter_playing();
+
+        state = STATE_PLAYING;
+    }
+}
+
 void (serial_port_ih)() {
     uint8_t iir;
 
     if(util_sys_inb(COM1_BASE_ADDR + INTERRUPT_IDENTIFICATION_REGISTER, &iir) != 0) return;
 
-    if((iir & RDA_MASK) != 0x04) return;
+    if ((iir & RDA_MASK) != 0x04 && (iir & RDA_MASK) != 0x0C) return;
 
     serial_port_read_byte(&serial_port_data_available);
 
     return;
 }
-
-
-
