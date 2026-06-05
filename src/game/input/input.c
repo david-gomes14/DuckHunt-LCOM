@@ -4,6 +4,8 @@
 
 #include "../../keyboard/kbc.h"
 #include "../../mouse/mouse.h"
+#include "../../serial_port/serial_port.h"
+#include "../../serial_port/uart.h"
 #include "../menu/menu.h"
 #include "../state/state.h"
  #include "../target/target.h"
@@ -39,16 +41,26 @@ void handle_keyboard() {
 				state = STATE_EXIT;
 				break;
 		}
-	} else if (state == STATE_GAME_OVER) {
-		if (scancode == ENTER_MAKE)
-			state_enter_leaderboard();
-		else if (scancode == ESC_BREAK_CODE)
+	} else if (state == STATE_MP_WAITING) {
+		// host à espera do 2º jogador: ESC cancela e volta ao menu
+		if (scancode == ESC_BREAK_CODE) {
+			serial_port_write_byte(MP_CANCEL);  // avisa o adversário que desisti
 			state_enter_menu();
+		}
+	} else if (state == STATE_GAME_OVER) {
+		if (mode == MODE_MULTIPLAYER_HOST || mode == MODE_MULTIPLAYER_GUEST) {
+			// multiplayer não usa leaderboard → ENTER ou ESC voltam ao menu
+			if (scancode == ENTER_MAKE || scancode == ESC_BREAK_CODE)
+				state_enter_menu();
+		} else {
+			if (scancode == ENTER_MAKE)
+				state_enter_leaderboard();
+			else if (scancode == ESC_BREAK_CODE)
+				state_enter_menu();
+		}
 	} else if (state == STATE_LEADERBOARD) {
 		if (scancode == ENTER_MAKE || scancode == ESC_BREAK_CODE)
 			state_enter_menu();
-	} else {
-		if (scancode == ESC_BREAK_CODE) state = STATE_EXIT;
 	}
 }
 

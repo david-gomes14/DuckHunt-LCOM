@@ -137,13 +137,51 @@ void draw_sprite(uint32_t *pixels, xpm_image_t *info, int x, int y, bool facing_
 }
 
 
+// só desenha se dentro do ecrã (guarda de negativos, que o draw_pixel não tem)
+static void ch_plot(int x, int y, uint32_t color) {
+	if (x >= 0 && y >= 0) draw_pixel((uint16_t) x, (uint16_t) y, color);
+}
+
+// quadrado cheio centrado em (cx,cy) com "raio" r (lado = 2r+1)
+static void ch_fill(int cx, int cy, int r, uint32_t color) {
+	for (int dy = -r; dy <= r; dy++)
+		for (int dx = -r; dx <= r; dx++)
+			ch_plot(cx + dx, cy + dy, color);
+}
+
+// mira estilo reticle: anel + cruz com gap + ticks + ponto central
 int draw_crosshair(int x, int y, int size, uint32_t color) {
-	for (int i = -size; i <= size; i++)
-		if (x + i >= 0) draw_pixel(x + i, y, color);
-	for (int i = 1; i <= size; i++) {
-		if (y - i >= 0) draw_pixel(x, y - i, color);
-		draw_pixel(x, y + i, color);
+	int R = size;                         // raio do anel
+	int gi = R / 2;                       // raio interior (gap no centro)
+	int go = R + (size / 3 > 3 ? size / 3 : 3);  // estende-se para lá do anel (ticks)
+	int t = 1;                            // metade da espessura dos braços (espessura 2t+1 = 3)
+
+	// 1) ponto central (3x3)
+	ch_fill(x, y, 1, color);
+
+	// 2) anel de 2px (raio R e R-1), midpoint circle
+	for (int rr = R - 1; rr <= R; rr++) {
+		int cx = 0, cy = rr, d = 1 - rr;
+		while (cx <= cy) {
+			ch_plot(x + cx, y + cy, color); ch_plot(x - cx, y + cy, color);
+			ch_plot(x + cx, y - cy, color); ch_plot(x - cx, y - cy, color);
+			ch_plot(x + cy, y + cx, color); ch_plot(x - cy, y + cx, color);
+			ch_plot(x + cy, y - cx, color); ch_plot(x - cy, y - cx, color);
+			cx++;
+			if (d < 0) d += 2 * cx + 1;
+			else { cy--; d += 2 * (cx - cy) + 1; }
+		}
 	}
+
+	// 3) quatro braços (espessura 3), de gi até go com gap no centro
+	for (int i = gi; i <= go; i++)
+		for (int w = -t; w <= t; w++) {
+			ch_plot(x + i, y + w, color);   // direita
+			ch_plot(x - i, y + w, color);   // esquerda
+			ch_plot(x + w, y + i, color);   // baixo
+			ch_plot(x + w, y - i, color);   // cima
+		}
+
 	return 0;
 }
 
