@@ -13,6 +13,7 @@ typedef struct {
 	int wobble;
 	int anim_frame;
 	bool active;
+	bool is_gold;
 } Target;
 
 void target_init();

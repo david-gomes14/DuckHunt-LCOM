@@ -104,14 +104,6 @@ void state_enter_game_over(game_result_t result) {
     if (mode == MODE_SINGLEPLAYER)
         leaderboard_add(score_get());
 
-    leaderboard_entry_t *entries = leaderboard_get();
-    for (int i = 0; i < leaderboard_size(); i++) {
-        printf("%d - %d pts (%02d:%02d %02d/%02d/%04d)\n",
-               i + 1, entries[i].score,
-               entries[i].date.hour, entries[i].date.minute,
-               entries[i].date.day, entries[i].date.month, entries[i].date.year);
-    }
-
     switch (result) {
         case RESULT_WIN:
             draw_pixmap((xpm_map_t) game_over_win, 0, 0);
