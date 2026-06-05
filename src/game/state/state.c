@@ -51,7 +51,7 @@ void state_render() {
         hud_draw(score_get(), state_get_time());
 		target_update();
 		target_draw();
-		draw_crosshair(mouse_x, mouse_y, 10, CROSSHAIR_COLOR);
+		draw_crosshair(mouse_x, mouse_y, 12, CROSSHAIR_COLOR);
 	}
 	vg_flip();
 }

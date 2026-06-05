@@ -61,8 +61,6 @@ void handle_keyboard() {
 	} else if (state == STATE_LEADERBOARD) {
 		if (scancode == ENTER_MAKE || scancode == ESC_BREAK_CODE)
 			state_enter_menu();
-	} else {
-		if (scancode == ESC_BREAK_CODE) state = STATE_EXIT;
 	}
 }
 
