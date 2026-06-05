@@ -78,8 +78,13 @@ void state_tick() {
     if (ticks_remaining <= 0) {
         state_enter_game_over();
     }
-    if(score_get() == 10) {
-        serial_port_write_byte(GAME_OVER);
+    if (score_get() == 10) {
+        if (mode == MODE_MULTIPLAYER_HOST || mode == MODE_MULTIPLAYER_GUEST) {
+            serial_port_write_byte(GAME_OVER);
+        }
+
+        state_enter_game_over();
+        state = STATE_GAME_OVER;
     }
 }
 

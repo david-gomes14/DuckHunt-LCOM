@@ -10,6 +10,8 @@
 
 static int menu_selection;
 
+extern game_mode_t mode;
+
 static uint32_t *menu_start_pixels = NULL;
 static uint32_t *menu_quit_pixels  = NULL;
 static xpm_image_t menu_start_info;
@@ -45,6 +47,12 @@ bool menu_move_down() {
 
 bool menu_select() {
     if (menu_selection == 0) {
+        mode = MODE_SINGLEPLAYER;
+        state_enter_playing();
+        return true;
+    }
+    if(menu_selection == 1) {
+        mode = MODE_MULTIPLAYER_HOST;
         state_enter_playing();
         return true;
     }
