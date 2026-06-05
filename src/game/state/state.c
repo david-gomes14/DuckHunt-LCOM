@@ -21,7 +21,7 @@
 
 #define CROSSHAIR_COLOR 0xFF0000
 #define GAME_DURATION_TICKS (60 * 60)
-#define GAMEOVER_SCORE_X 618
+#define GAMEOVER_SCORE_X 628
 #define GAMEOVER_SCORE_Y 473
 
 #define SCREEN_W 1152
@@ -32,8 +32,8 @@
 #define LB_DIGIT_H         50   // altura de um dígito normal (para centrar na vertical)
 
 #define LB_RANK_X         248   // marcador de posição, à esquerda da placa
-#define LB_SCORE_X        305   // score, encostado à esquerda da placa
-#define LB_DATETIME_X     445   // datetime, preenche o resto da placa
+#define LB_SCORE_X        325   // score, encostado à esquerda da placa
+#define LB_DATETIME_X     455   // datetime, preenche o resto da placa
 
 game_state_t state = STATE_MENU;
 game_mode_t mode = MODE_SINGLEPLAYER;
@@ -103,14 +103,6 @@ void state_enter_game_over(game_result_t result) {
     // o leaderboard é só do singleplayer — em multiplayer mata-se sempre 10 patos
     if (mode == MODE_SINGLEPLAYER)
         leaderboard_add(score_get());
-
-    leaderboard_entry_t *entries = leaderboard_get();
-    for (int i = 0; i < leaderboard_size(); i++) {
-        printf("%d - %d pts (%02d:%02d %02d/%02d/%04d)\n",
-               i + 1, entries[i].score,
-               entries[i].date.hour, entries[i].date.minute,
-               entries[i].date.day, entries[i].date.month, entries[i].date.year);
-    }
 
     switch (result) {
         case RESULT_WIN:

@@ -36,8 +36,6 @@ int(proj_main_loop)(int argc, char* argv[]) {
 
 	game_cleanup();
 
-	printf("AIM LAB\n");
-
 	return 0;
 }
 
