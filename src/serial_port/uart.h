@@ -63,6 +63,8 @@
 #define MODEM_STATUS_INTERRUPT BIT(3)
 
 
-#define GAME_OVER 0xFA
-#define GAME_START 0xFB
+#define GAME_OVER 0xFA   // vencedor avisa o adversário (chegou a 10 patos)
+#define GAME_START 0xFB  // "cliquei multiplayer / estou pronto" (handshake host<->guest)
+#define MP_CANCEL 0xF9   // host à espera carregou ESC e desistiu
+#define MP_SCORE_BASE 0xC0  // fim do tempo: envia MP_SCORE_BASE+score (0xC0..0xC9, score 0..9)
 #endif /* _LCOM_UART_H_ */

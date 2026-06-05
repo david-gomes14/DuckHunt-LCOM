@@ -13,7 +13,11 @@
 #include "../../serial_port/serial_port.h"
 #include "../../images/background.xpm"
 #include "../../images/game_over.xpm"
+#include "../../images/game_over_win.xpm"
+#include "../../images/game_over_lose.xpm"
+#include "../../images/game_over_draw.xpm"
 #include "../../images/leaderboard.xpm"
+#include "../../images/menu_waiting.xpm"
 
 #define CROSSHAIR_COLOR 0xFF0000
 #define GAME_DURATION_TICKS (60 * 60)
@@ -38,6 +42,8 @@ extern int mouse_x;
 extern int mouse_y;
 
 static int ticks_remaining = 0;
+static bool peer_ready = false;   // o adversário já clicou multiplayer e está à espera
+static int opp_score = -1;        // score final do adversário no fim do tempo (-1 = ainda não recebido)
 
 void state_render() {
     vg_restore_background();
@@ -57,6 +63,27 @@ void state_enter_menu() {
     state = STATE_MENU;
 }
 
+void state_enter_multiplayer() {
+    if (peer_ready) {
+        // o adversário já estava à espera → sou o GUEST; arrancamos os dois
+        peer_ready = false;
+        mode = MODE_MULTIPLAYER_GUEST;
+        serial_port_write_byte(GAME_START);   // diz ao host para arrancar
+        state_enter_playing();
+    } else {
+        // sou o primeiro a clicar → HOST; fico à espera do 2º jogador
+        mode = MODE_MULTIPLAYER_HOST;
+        serial_port_write_byte(GAME_START);    // anuncia que estou pronto
+        state_enter_mp_waiting();
+    }
+}
+
+void state_enter_mp_waiting() {
+    draw_pixmap((xpm_map_t) menu_waiting, 0, 0);
+    vg_store_background();
+    state = STATE_MP_WAITING;
+}
+
 void state_enter_playing() {
     draw_pixmap((xpm_map_t) background, 0, 0);
     vg_store_background();
@@ -67,16 +94,15 @@ void state_enter_playing() {
     target_init();
     score_reset();
     ticks_remaining = GAME_DURATION_TICKS;
-
-    if(mode == MODE_MULTIPLAYER_HOST) {
-        serial_port_write_byte(GAME_START);
-    }
+    opp_score = -1;
 
     state = STATE_PLAYING;
 }
 
-void state_enter_game_over() {
-    leaderboard_add(score_get());
+void state_enter_game_over(game_result_t result) {
+    // o leaderboard é só do singleplayer — em multiplayer mata-se sempre 10 patos
+    if (mode == MODE_SINGLEPLAYER)
+        leaderboard_add(score_get());
 
     leaderboard_entry_t *entries = leaderboard_get();
     for (int i = 0; i < leaderboard_size(); i++) {
@@ -86,8 +112,22 @@ void state_enter_game_over() {
                entries[i].date.day, entries[i].date.month, entries[i].date.year);
     }
 
-    draw_pixmap((xpm_map_t) game_over, 0, 0);
-    hud_draw_score_large_at(score_get(), GAMEOVER_SCORE_X, GAMEOVER_SCORE_Y);
+    switch (result) {
+        case RESULT_WIN:
+            draw_pixmap((xpm_map_t) game_over_win, 0, 0);
+            break;
+        case RESULT_LOSE:
+            draw_pixmap((xpm_map_t) game_over_lose, 0, 0);
+            break;
+        case RESULT_DRAW:
+            draw_pixmap((xpm_map_t) game_over_draw, 0, 0);
+            break;
+        default:  // RESULT_NONE — singleplayer, mostra o score grande
+            draw_pixmap((xpm_map_t) game_over, 0, 0);
+            hud_draw_score_large_at(score_get(), GAMEOVER_SCORE_X, GAMEOVER_SCORE_Y);
+            break;
+    }
+
     vg_store_background();
     state = STATE_GAME_OVER;
 }
@@ -112,23 +152,75 @@ void state_enter_leaderboard() {
     state = STATE_LEADERBOARD;
 }
 
+// fim do tempo em multiplayer: compara o meu score com o do adversário e decide
+static void state_decide_timeout(int me, int opp) {
+    opp_score = -1;
+    if (me > opp)       state_enter_game_over(RESULT_WIN);
+    else if (me < opp)  state_enter_game_over(RESULT_LOSE);
+    else                state_enter_game_over(RESULT_DRAW);  // empate
+}
+
 void state_tick() {
     if (state != STATE_PLAYING) return;
-    ticks_remaining--;
-    if (ticks_remaining <= 0) {
-        state_enter_game_over();
-    }
-    if (score_get() == 10) {
-        if (mode == MODE_MULTIPLAYER_HOST || mode == MODE_MULTIPLAYER_GUEST) {
-            serial_port_write_byte(GAME_OVER);
-        }
 
-        state_enter_game_over();
-        state = STATE_GAME_OVER;
+    if (mode == MODE_MULTIPLAYER_HOST || mode == MODE_MULTIPLAYER_GUEST) {
+        // MULTIPLAYER: ganha quem fizer 10 patos primeiro; senão, quem tiver mais ao fim do tempo
+        if (score_get() >= 10) {
+            serial_port_write_byte(GAME_OVER);  // chegámos a 10 primeiro → vencemos
+            state_enter_game_over(RESULT_WIN);
+            return;
+        }
+        ticks_remaining--;
+        if (ticks_remaining <= 0) {
+            // o meu tempo acabou: envia o meu score ao adversário
+            serial_port_write_byte(MP_SCORE_BASE + score_get());
+            if (opp_score >= 0) {
+                state_decide_timeout(score_get(), opp_score);  // já tenho o dele → decide
+            } else {
+                state = STATE_MP_TIMEUP;                        // espera o score dele
+            }
+        }
+    } else {
+        // SINGLEPLAYER: joga os 60s todos, sem limite de patos
+        ticks_remaining--;
+        if (ticks_remaining <= 0) {
+            state_enter_game_over(RESULT_NONE);
+        }
     }
 }
 
 int state_get_time() {
     return ticks_remaining / 60;
+}
+
+// --- reações a bytes recebidos pela série (chamadas por handle_uart) ---
+
+void state_peer_ready() {
+    if (state == STATE_MP_WAITING) {
+        // sou o host à espera e o 2º jogador entrou → arrancamos
+        state_enter_playing();
+    } else if (state == STATE_MENU) {
+        // o adversário clicou primeiro; ainda não cliquei → fica registado
+        peer_ready = true;
+    }
+}
+
+void state_peer_cancel() {
+    peer_ready = false;
+}
+
+void state_peer_game_over() {
+    // o adversário fez 10 patos → perdemos (mesmo se já estávamos à espera do score dele)
+    if (state == STATE_PLAYING || state == STATE_MP_TIMEUP)
+        state_enter_game_over(RESULT_LOSE);
+}
+
+void state_peer_score(int s) {
+    opp_score = s;
+    if (state == STATE_MP_TIMEUP) {
+        // o meu tempo já tinha acabado e estava à espera → decide agora
+        state_decide_timeout(score_get(), opp_score);
+    }
+    // se ainda estou a jogar, fica guardado; decido quando o meu tempo acabar
 }
 

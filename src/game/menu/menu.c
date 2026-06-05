@@ -5,7 +5,8 @@
 #include "../../graphic/graphic.h"
 #include "../state/state.h"
 
-#include "../../images/menu_start.xpm"
+#include "../../images/menu_singleplayer.xpm"
+#include "../../images/menu_multiplayer.xpm"
 #include "../../images/menu_leaderboard.xpm"
 #include "../../images/menu_quit.xpm"
 
@@ -19,11 +20,10 @@ static xpm_image_t menu_info[4];
 void menu_init() {
     menu_selection = 0;
     if (menu_pixels[0] == NULL) {
-        menu_pixels[0] = (uint32_t*) xpm_load((xpm_map_t) menu_start,       XPM_8_8_8_8, &menu_info[0]);
-        // TODO: substituir menu_start por imagem própria do multiplayer (ex: menu_multiplayer.xpm)
-        menu_pixels[1] = (uint32_t*) xpm_load((xpm_map_t) menu_start,       XPM_8_8_8_8, &menu_info[1]);
-        menu_pixels[2] = (uint32_t*) xpm_load((xpm_map_t) menu_leaderboard, XPM_8_8_8_8, &menu_info[2]);
-        menu_pixels[3] = (uint32_t*) xpm_load((xpm_map_t) menu_quit,        XPM_8_8_8_8, &menu_info[3]);
+        menu_pixels[0] = (uint32_t*) xpm_load((xpm_map_t) menu_singleplayer, XPM_8_8_8_8, &menu_info[0]);
+        menu_pixels[1] = (uint32_t*) xpm_load((xpm_map_t) menu_multiplayer,  XPM_8_8_8_8, &menu_info[1]);
+        menu_pixels[2] = (uint32_t*) xpm_load((xpm_map_t) menu_leaderboard,  XPM_8_8_8_8, &menu_info[2]);
+        menu_pixels[3] = (uint32_t*) xpm_load((xpm_map_t) menu_quit,         XPM_8_8_8_8, &menu_info[3]);
     }
 }
 
@@ -51,8 +51,7 @@ bool menu_select() {
         return true;
     }
     if (menu_selection == 1) {
-        mode = MODE_MULTIPLAYER_HOST;
-        state_enter_playing();
+        state_enter_multiplayer();   // decide host/guest e mostra "waiting" se for host
         return true;
     }
     if (menu_selection == 2) {

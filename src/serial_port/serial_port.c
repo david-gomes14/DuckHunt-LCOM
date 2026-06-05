@@ -109,21 +109,18 @@ int (serial_port_write_byte)(uint8_t byte) {
 void (handle_uart)() {
     serial_port_ih();
 
-    if(serial_port_data_available == GAME_OVER) {
-        serial_port_data_available = 0; 
+    uint8_t byte = serial_port_data_available;
+    serial_port_data_available = 0;
 
-        state_enter_game_over();
-
-        state = STATE_GAME_OVER;
-    }
-
-    if(serial_port_data_available == GAME_START) {
-        serial_port_data_available = 0;
-
-        mode = MODE_MULTIPLAYER_GUEST;
-        state_enter_playing();
-
-        state = STATE_PLAYING;
+    switch (byte) {
+        case GAME_START:  state_peer_ready();      break;  // adversário clicou multiplayer
+        case MP_CANCEL:   state_peer_cancel();     break;  // host desistiu da espera
+        case GAME_OVER:   state_peer_game_over();  break;  // adversário fez 10 → perdemos
+        default:
+            // fim do tempo: o adversário mandou o score final (MP_SCORE_BASE + score)
+            if (byte >= MP_SCORE_BASE && byte <= MP_SCORE_BASE + 9)
+                state_peer_score(byte - MP_SCORE_BASE);
+            break;
     }
 }
 
