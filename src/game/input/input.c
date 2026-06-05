@@ -40,8 +40,12 @@ void handle_keyboard() {
 				break;
 		}
 	} else if (state == STATE_GAME_OVER) {
-		// qualquer tecla de confirmação volta ao menu
-		if (scancode == ESC_BREAK_CODE || scancode == ENTER_MAKE)
+		if (scancode == ENTER_MAKE)
+			state_enter_leaderboard();
+		else if (scancode == ESC_BREAK_CODE)
+			state_enter_menu();
+	} else if (state == STATE_LEADERBOARD) {
+		if (scancode == ENTER_MAKE || scancode == ESC_BREAK_CODE)
 			state_enter_menu();
 	} else {
 		if (scancode == ESC_BREAK_CODE) state = STATE_EXIT;

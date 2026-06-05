@@ -8,6 +8,7 @@ PROG = proj
 .PATH: ${.CURDIR}/game/target
 .PATH: ${.CURDIR}/game/score
 .PATH: ${.CURDIR}/game/hud
+.PATH: ${.CURDIR}/game/leaderboard
 
 .PATH: ${.CURDIR}/rtc
 .PATH: ${.CURDIR}/timer
@@ -18,7 +19,7 @@ PROG = proj
 .PATH: ${.CURDIR}/serial_port
 
 # source code files to be compiled
-SRCS = main.c game.c menu.c input.c state.c target.c score.c hud.c graphic.c timer.c kbc.c mouse.c utils.c serial_port.c
+SRCS = main.c game.c menu.c input.c state.c target.c score.c hud.c leaderboard.c graphic.c rtc.c timer.c kbc.c mouse.c utils.c serial_port.c
 
 # additional compilation flags
 CFLAGS += -pedantic
