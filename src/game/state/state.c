@@ -22,6 +22,7 @@
 #define SCREEN_H 864
 
 game_state_t state = STATE_MENU;
+game_mode_t mode = MODE_SINGLEPLAYER;
 
 extern int mouse_x;
 extern int mouse_y;
@@ -57,7 +58,10 @@ void state_enter_playing() {
     score_reset();
     ticks_remaining = GAME_DURATION_TICKS;
 
-    serial_port_write_byte(GAME_START);
+    if(mode == MODE_MULTIPLAYER_HOST) {
+        serial_port_write_byte(GAME_START);
+    }
+
     state = STATE_PLAYING;
 }
 
@@ -76,10 +80,6 @@ void state_tick() {
     }
     if(score_get() == 10) {
         serial_port_write_byte(GAME_OVER);
-
-        state_enter_game_over();
-        
-        state = STATE_GAME_OVER;
     }
 }
 

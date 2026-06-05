@@ -6,6 +6,7 @@
 #include "../game/state/state.h"
 
 extern game_state_t state;
+extern game_mode_t mode;
 
 int serial_port_hook_id = COM1_IRQ;
 uint8_t serial_port_data_available;
@@ -94,15 +95,11 @@ int (serial_port_read_byte)(uint8_t *byte) {
 int (serial_port_write_byte)(uint8_t byte) {
     uint8_t lsr;
 
-    do {
-        if(util_sys_inb(COM1_BASE_ADDR + LINE_STATUS_REGISTER, &lsr) != 0) return 1;
+    if(util_sys_inb(COM1_BASE_ADDR + LINE_STATUS_REGISTER, &lsr) != 0) return 1;
 
-        if((lsr & (THR_EMPTY)) == 0) {
-            tickdelay(micros_to_ticks(1000));
-        }
-
-    }while((lsr & THR_EMPTY) == 0);
-
+    if((lsr & (THR_EMPTY)) == 0) {
+        return 1;
+    }
 
     if(sys_outb(COM1_BASE_ADDR, byte) != 0) return 1;
 
@@ -123,6 +120,7 @@ void (handle_uart)() {
     if(serial_port_data_available == GAME_START) {
         serial_port_data_available = 0;
 
+        mode = MODE_MULTIPLAYER_GUEST;
         state_enter_playing();
 
         state = STATE_PLAYING;
