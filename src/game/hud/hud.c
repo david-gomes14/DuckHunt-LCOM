@@ -26,7 +26,7 @@
 #include "../../images/numbers/eight_lg.xpm"
 #include "../../images/numbers/nine_lg.xpm"
 
-#define SCORE_X 200
+#define SCORE_X 210
 #define SCORE_Y 55
 #define TIME_X 940
 #define TIME_Y 65
