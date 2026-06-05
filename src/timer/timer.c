@@ -2,6 +2,7 @@
 #include <minix/sysutil.h>
 
 #include "timer.h"
+#include "../utils/utils.h"
 
 int timer_hook_id = TIMER0_IRQ;
 int timer_counter = 0;
