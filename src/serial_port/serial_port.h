@@ -18,8 +18,9 @@ int (serial_port_format_data)();
 int (serial_port_enableinterrupts)();
 
 int (serial_port_read_byte)(uint8_t *byte);
-int (serial_port_write_byte)(uint8_t *byte);
+int (serial_port_write_byte)(uint8_t byte);
 
+void (handle_uart)();
 void (serial_port_ih)();
 
 #endif

@@ -3,7 +3,7 @@
 #include "uart.h"
 #include "serial_port.h"
 #include "../utils/utils.h"
-#include "../state/state.h"
+#include "../game/state/state.h"
 
 extern game_state_t state;
 
